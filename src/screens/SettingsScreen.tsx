@@ -3,116 +3,138 @@ import {
   View,
   Text,
   TextInput,
+  Switch,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'expo-router';
 import {
-  setApiUrl,
-  setUuid,
-  setCarNumber,
-  setCurrentCarNumber,
-} from '../store/store';
-import { RootState } from '../store/store';
+  RootState
+} from '@/store/store';
+import {SafeAreaView} from "react-native-safe-area-context";
 
 const SettingsScreen: React.FC = () => {
-  const dispatch = useDispatch();
-  const { apiUrl, uuid, carNumber } = useSelector(
+  const router = useRouter();
+  const { carNumber } = useSelector(
     (state: RootState) => state.settings
   );
 
-  const [localApiUrl, setLocalApiUrl] = useState(apiUrl);
-  const [localUuid, setLocalUuid] = useState(uuid);
   const [localCarNumber, setLocalCarNumber] = useState(carNumber.toString());
+  const [manualDisplay, setManualDisplay] = useState(false);
 
-  const handleSaveSettings = () => {
-    dispatch(setApiUrl(localApiUrl));
-    dispatch(setUuid(localUuid));
-    const parsedCarNumber = parseInt(localCarNumber, 10);
-    if (!isNaN(parsedCarNumber)) {
-      dispatch(setCarNumber(parsedCarNumber));
-      dispatch(setCurrentCarNumber(parsedCarNumber));
-    }
+  const handleConnectDevice = () => {
+    router.push('/scan-device');
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView style={styles.container}>
+          <Text style={styles.title}>Settings</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>API Configuration</Text>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Device Connection</Text>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>API URL</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="https://api.ris-timing.be/..."
-            value={localApiUrl}
-            onChangeText={setLocalApiUrl}
-            placeholderTextColor="#999"
-          />
-          <Text style={styles.hint}>
-            Enter the RIS-Timing API endpoint URL
-          </Text>
-        </View>
+            <TouchableOpacity
+                style={styles.button}
+                onPress={handleConnectDevice}
+            >
+              <Text style={styles.buttonText}>Connect device</Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>UUID</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-            value={localUuid}
-            onChangeText={setLocalUuid}
-            placeholderTextColor="#999"
-          />
-          <Text style={styles.hint}>
-            Your unique identifier for the RIS-Timing system
-          </Text>
-        </View>
-      </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Display Configuration</Text>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Display Configuration</Text>
+            <View style={styles.formGroup}>
+              <View style={styles.switchRow}>
+                <View style={styles.switchText}>
+                  <Text style={styles.label}>Manual display</Text>
+                  <Text style={styles.hint}>
+                    Manual display requires you to enter the text to send yourself
+                  </Text>
+                </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Car Number</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="123"
-            value={localCarNumber}
-            onChangeText={setLocalCarNumber}
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-          />
-          <Text style={styles.hint}>
-            The car number to track on the LED display
-          </Text>
-        </View>
-      </View>
+                <Switch
+                    value={manualDisplay}
+                    onValueChange={setManualDisplay}
+                    trackColor={{
+                      true: "#007AFF",
+                    }}
+                />
+              </View>
+            </View>
 
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={handleSaveSettings}
-      >
-        <Text style={styles.saveButtonText}>Save Settings</Text>
-      </TouchableOpacity>
+            {!manualDisplay && (
+                <>
+                  <View style={styles.formGroup}>
+                    <Text style={styles.label}>
+                      Car Number
+                    </Text>
 
-      <View style={styles.infoBox}>
-        <Text style={styles.infoTitle}>ℹ️ Information</Text>
-        <Text style={styles.infoText}>
-          These settings are used to connect to the RIS-Timing API and configure which car's lap times will be displayed on the LED panel.
-        </Text>
-      </View>
-    </ScrollView>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="123"
+                        value={localCarNumber}
+                        placeholderTextColor="#999"
+                        keyboardType="numeric"
+                        onChangeText={(text) => {
+                          const onlyNumbers = text.replace(/\D/g, '');
+                          setLocalCarNumber(onlyNumbers);
+                        }}
+                    />
+
+                    <Text style={styles.hint}>
+                      The car number to track on the LED display
+                    </Text>
+                  </View>
+
+
+                  <View style={styles.formGroup}>
+                    <View style={styles.switchRow}>
+                      <View style={styles.switchText}>
+
+                        <Text style={styles.label}>
+                          Enable Telemetry
+                        </Text>
+
+                        <Text style={styles.hint}>
+                          Start receiving live telemetry data
+                        </Text>
+
+                      </View>
+
+                      <Switch
+                          /*value={telemetryEnabled}
+                          onValueChange={setTelemetryEnabled}
+                          */
+                          trackColor={{
+                            false:"#D1D5DB",
+                            true:"#007AFF",
+                          }}
+                      />
+
+                    </View>
+                  </View>
+                </>
+            )}
+            </View>
+        </ScrollView>
+      </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+  safeArea:{
+    flex:1,
+    backgroundColor:'#F6F7FB',
+  },
+  container:{
+    flex:1,
+    paddingHorizontal:20,
+    paddingTop:20,
+    backgroundColor:'#F6F7FB',
   },
   title: {
     fontSize: 24,
@@ -142,7 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#333',
-    marginBottom: 8,
+    marginBottom: 2
   },
   input: {
     borderWidth: 1,
@@ -156,38 +178,29 @@ const styles = StyleSheet.create({
   hint: {
     fontSize: 12,
     color: '#999',
-    marginTop: 6,
+    marginTop: 2,
   },
-  saveButton: {
+  button: {
     backgroundColor: '#007AFF',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 16,
   },
-  saveButtonText: {
+  buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
-  infoBox: {
-    backgroundColor: '#E8F4FD',
-    borderLeftWidth: 4,
-    borderLeftColor: '#007AFF',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 20,
+  switchRow: {
+    flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
   },
-  infoTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#007AFF',
-    marginBottom: 8,
-  },
-  infoText: {
-    fontSize: 13,
-    color: '#333',
-    lineHeight: 20,
+
+  switchText: {
+    flex: 1,
+        marginRight: 16,
   },
 });
 

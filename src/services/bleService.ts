@@ -1,15 +1,6 @@
-import { BleManager, Characteristic, Device } from 'react-native-ble-plx';
 import { Platform } from 'react-native';
 
 const SERVICE_FFF0_CHAR = '0000fff1-0000-1000-8000-00805f9b34fb';
-const BLE_MANAGER = new BleManager();
-
-export enum CommandStatus {
-  NOT_STARTED = 'NOT_STARTED',
-  TRANSMITTED = 'TRANSMITTED',
-  ACKNOWLEDGED = 'ACKNOWLEDGED',
-  ERROR = 'ERROR',
-}
 
 export interface BleDevice {
   id: string;
@@ -18,63 +9,96 @@ export interface BleDevice {
   height: number;
 }
 
+let BLE_MANAGER: any = null;
+
+function getBleManager(): any {
+  if (!BLE_MANAGER) {
+    if (Platform.OS === 'ios' && __DEV__) {
+      BLE_MANAGER = {
+        onStateChange: (callback: (state: string) => void) => {
+          callback('PoweredOn');
+          return { remove: () => {} };
+        },
+        startDeviceScan: () => ({ remove: () => {} }),
+        stopDeviceScan: () => {},
+        connectToDevice: async () => ({ discoverAllServicesAndCharacteristics: async () => {} }),
+        cancelDeviceConnection: async () => {},
+      } as any;
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, global-require
+      const { BleManager } = require('react-native-ble-plx');
+      BLE_MANAGER = new BleManager();
+    }
+  }
+  return BLE_MANAGER;
+}
+
 class BleService {
-  private device: Device | null = null;
-  private isConnected: boolean = false;
-  private connectionTimeoutMs: number = 10000;
-  private commandTimeoutMs: number = 1000;
-  private connectionRetries: number = 5;
-  private characteristicUUID: string = SERVICE_FFF0_CHAR;
+  private device: any = null;
+  private isConnected = false;
+  private readonly connectionTimeoutMs = 10000;
+  private readonly connectionRetries = 5;
+  private readonly characteristicUUID = SERVICE_FFF0_CHAR;
 
   async initialize(): Promise<void> {
     if (Platform.OS === 'android') {
-      await BLE_MANAGER.requestAndroidPermission();
+      try {
+        const manager = getBleManager();
+        await manager.requestAndroidPermission?.();
+      } catch (error) {
+        console.warn('Android permission request failed or not available:', error);
+      }
     }
   }
 
   async scanForDevices(): Promise<BleDevice[]> {
     const devices: BleDevice[] = [];
-    const foundDevices = new Map<string, Device>();
+    const foundDevices = new Map<string, any>();
 
     return new Promise((resolve, reject) => {
-      const subscription = BLE_MANAGER.onStateChange(async (state) => {
-        if (state === 'PoweredOn') {
-          subscription.remove();
-          try {
-            const scanSubscription = BLE_MANAGER.startDeviceScan(
-              ['FFF0'],
-              { allowDuplicates: false },
-              (error, device) => {
-                if (error) {
-                  scanSubscription.remove();
-                  reject(error);
-                  return;
-                }
+      try {
+        const manager = getBleManager();
+        const subscription = manager.onStateChange?.((state: string) => {
+          if (state === 'PoweredOn') {
+            subscription?.remove?.();
+            try {
+              const scanSubscription = manager.startDeviceScan?.(
+                ['FFF0'],
+                { allowDuplicates: false },
+                (error: Error | null, device: any) => {
+                  if (error) {
+                    scanSubscription?.remove?.();
+                    reject(error);
+                    return;
+                  }
 
-                if (device && device.name?.includes('CoolLEDX')) {
-                  if (!foundDevices.has(device.id)) {
-                    foundDevices.set(device.id, device);
-                    devices.push({
-                      id: device.id,
-                      name: device.name,
-                      width: 96,
-                      height: 16,
-                    });
+                  if (device?.name?.includes('CoolLEDX')) {
+                    if (!foundDevices.has(device.id)) {
+                      foundDevices.set(device.id, device);
+                      devices.push({
+                        id: device.id,
+                        name: device.name,
+                        width: 96,
+                        height: 16,
+                      });
+                    }
                   }
                 }
-              }
-            );
+              );
 
-            setTimeout(() => {
-              scanSubscription.remove();
-              BLE_MANAGER.stopDeviceScan();
-              resolve(devices);
-            }, this.connectionTimeoutMs);
-          } catch (error) {
-            reject(error);
+              setTimeout(() => {
+                scanSubscription?.remove?.();
+                manager.stopDeviceScan?.();
+                resolve(devices);
+              }, this.connectionTimeoutMs);
+            } catch (error) {
+              reject(error);
+            }
           }
-        }
-      });
+        });
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 
@@ -83,11 +107,12 @@ class BleService {
 
     for (let attempt = 0; attempt < this.connectionRetries; attempt++) {
       try {
-        const device = await BLE_MANAGER.connectToDevice(deviceId, {
+        const manager = getBleManager();
+        const device = await manager.connectToDevice?.(deviceId, {
           timeout: this.connectionTimeoutMs,
         });
 
-        await device.discoverAllServicesAndCharacteristics();
+        await device?.discoverAllServicesAndCharacteristics?.();
         this.device = device;
         this.isConnected = true;
         return;
@@ -104,7 +129,8 @@ class BleService {
 
   async disconnectDevice(): Promise<void> {
     if (this.device) {
-      await BLE_MANAGER.cancelDeviceConnection(this.device.id);
+      const manager = getBleManager();
+      await manager.cancelDeviceConnection?.(this.device.id);
       this.isConnected = false;
       this.device = null;
     }
@@ -115,23 +141,16 @@ class BleService {
       throw new Error('Device not connected');
     }
 
-    const byteArray = Buffer.from(data);
-    const base64String = byteArray.toString('base64');
+    // Convert number array to base64 string
+    const base64String = btoa(String.fromCodePoint(...data));
 
-    await this.device.writeCharacteristicWithResponseForService(
+    await this.device.writeCharacteristicWithResponseForService?.(
       'FFF0',
       this.characteristicUUID,
       base64String
     );
   }
-
-  isDeviceConnected(): boolean {
-    return this.isConnected;
-  }
-
-  getConnectedDevice(): Device | null {
-    return this.device;
-  }
 }
 
 export default new BleService();
+

@@ -5,8 +5,6 @@
   "dependencies": {
     "@expo/ui": "~57.0.9",
     "@expo/vector-icons": "^15.1.1",
-    "@react-navigation/bottom-tabs": "^7.18.14",
-    "@react-navigation/native": "^7.3.14",
     "@reduxjs/toolkit": "^2.12.0",
     "axios": "^1.19.0",
     "expo": "~57.0.10",
@@ -40,11 +38,11 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
+    "start": "EXPO_ROUTER_APP_ROOT=src expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "android": "EXPO_ROUTER_APP_ROOT=src expo start --android",
+    "ios": "EXPO_ROUTER_APP_ROOT=src expo start --ios",
+    "web": "EXPO_ROUTER_APP_ROOT=src expo start --web",
     "lint": "expo lint"
   },
   "private": true

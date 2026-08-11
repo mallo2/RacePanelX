@@ -87,15 +87,11 @@ const telemetrySlice = createSlice({
 });
 
 export interface SettingsState {
-  apiUrl: string;
-  uuid: string;
   carNumber: number;
   updateInterval: number;
 }
 
 const settingsInitialState: SettingsState = {
-  apiUrl: '',
-  uuid: '',
   carNumber: 0,
   updateInterval: 5000,
 };
@@ -104,12 +100,6 @@ const settingsSlice = createSlice({
   name: 'settings',
   initialState: settingsInitialState,
   reducers: {
-    setApiUrl: (state, action: PayloadAction<string>) => {
-      state.apiUrl = action.payload;
-    },
-    setUuid: (state, action: PayloadAction<string>) => {
-      state.uuid = action.payload;
-    },
     setCarNumber: (state, action: PayloadAction<number>) => {
       state.carNumber = action.payload;
     },
@@ -121,7 +111,7 @@ const settingsSlice = createSlice({
 
 export const { setDevices, setConnectedDevice, setIsScanning, setError, resetBleState } = bleSlice.actions;
 export const { setCurrentCarNumber, setCurrentLapTime, setCurrentPosition, setIsUpdating } = telemetrySlice.actions;
-export const { setApiUrl, setUuid, setCarNumber, setUpdateInterval } = settingsSlice.actions;
+export const { setCarNumber, setUpdateInterval } = settingsSlice.actions;
 
 export const store = configureStore({
   reducer: {

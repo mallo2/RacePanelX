@@ -76,7 +76,7 @@ Pour plus de détails, consultez **[SETUP.md](./SETUP.md)**
 - **React Navigation** - Bottom tab tabs (Scan, Telemetry, Settings)
 
 ```
-App
+Index
 ├── Redux Store
 │   ├── BLE Slice
 │   ├── Telemetry Slice
@@ -150,7 +150,7 @@ CoolLedX-RN/
 │   ├── config/                # Configuration
 │   │   └── config.ts
 │   └── components/            # Composants réutilisables
-├── App.tsx                     # Root component
+├── Index.tsx                     # Root component
 ├── app.json                    # Configuration Expo
 ├── package.json                # Dependencies
 ├── SETUP.md                    # Guide démarrage
@@ -228,7 +228,7 @@ Voir **[SETUP.md](./SETUP.md#-troubleshooting)** pour plus.
 - [ ] Historique telemetry
 
 ### Phase 4 : Deployment
-- [ ] App Store (iOS)
+- [ ] Index Store (iOS)
 - [ ] Google Play (Android)
 
 ---

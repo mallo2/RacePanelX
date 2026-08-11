@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,12 +15,13 @@ import {
   setConnectedDevice,
   setIsScanning,
   setError,
-} from '../store/store';
-import { RootState } from '../store/store';
+  RootState
+} from '@/store/store';
+import {Ionicons} from "@expo/vector-icons";
 
 const DeviceScanScreen: React.FC<{ onConnect: (device: BleDevice) => void }> = ({ onConnect }) => {
   const dispatch = useDispatch();
-  const { devices, isScanning, error, connectedDevice } = useSelector(
+  const { devices, isScanning, connectedDevice } = useSelector(
     (state: RootState) => state.ble
   );
 
@@ -86,35 +87,108 @@ const DeviceScanScreen: React.FC<{ onConnect: (device: BleDevice) => void }> = (
   );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>CoolLEDX Device Finder</Text>
+      <View style={styles.card}>
 
-      {error && <Text style={styles.error}>{error}</Text>}
+        <View style={styles.header}>
 
-      <TouchableOpacity
-        style={[styles.button, isScanning && styles.buttonDisabled]}
-        onPress={handleScan}
-        disabled={isScanning}
-      >
-        {isScanning ? (
-          <ActivityIndicator size="small" color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Scan for Devices</Text>
-        )}
-      </TouchableOpacity>
+          <View style={styles.headerLeft}>
 
-      <Text style={styles.subtitle}>
-        {devices.length} device{devices.length !== 1 ? 's' : ''} found
-      </Text>
+            <View style={styles.bluetoothCircle}>
+              <Ionicons
+                  name="bluetooth"
+                  size={32}
+                  color="#007AFF"
+              />
+            </View>
 
-      <FlatList
-        data={devices}
-        renderItem={renderDevice}
-        keyExtractor={(item) => item.id}
-        style={styles.list}
-      />
-    </View>
-  );
+
+            <View>
+              <Text style={styles.title}>
+                Bluetooth
+              </Text>
+
+              <Text style={styles.subtitle}>
+                Search devices to connect
+              </Text>
+            </View>
+
+          </View>
+
+
+          {devices.length > 0 && (
+              <TouchableOpacity
+                  onPress={()=>{
+                    dispatch(setDevices([]));
+                    dispatch(setConnectedDevice(null));
+                  }}
+              >
+                <Ionicons
+                    name="refresh"
+                    size={25}
+                    color="#007AFF"
+                />
+              </TouchableOpacity>
+          )}
+
+        </View>
+
+
+
+        <TouchableOpacity
+            style={[
+              styles.scanButton,
+              isScanning && styles.scanButtonScanning
+            ]}
+            onPress={handleScan}
+            disabled={isScanning}
+        >
+
+          {isScanning ? (
+
+              <>
+                <ActivityIndicator
+                    color="#B45309"
+                    style={{marginRight:10}}
+                />
+
+                <Text style={styles.scanButtonScanningText}>
+                  Scanning...
+                </Text>
+              </>
+
+          ) : (
+
+              <>
+                <Ionicons
+                    name="search"
+                    size={20}
+                    color="white"
+                />
+
+                <Text style={styles.scanButtonText}>
+                  Scan
+                </Text>
+              </>
+
+          )}
+
+        </TouchableOpacity>
+
+
+
+        <Text style={styles.subtitle}>
+          {devices.length} device{devices.length > 1 ? "s" : ""} found
+        </Text>
+
+
+        <FlatList
+            data={devices}
+            renderItem={renderDevice}
+            keyExtractor={(item)=>item.id}
+        />
+
+      </View>
+  )
 };
 
 const styles = StyleSheet.create({
@@ -122,17 +196,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#f5f5f5',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#333',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#666',
-    marginVertical: 8,
   },
   button: {
     backgroundColor: '#007AFF',
@@ -160,14 +223,6 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
-  deviceItem: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 8,
-    borderLeftWidth: 4,
-    borderLeftColor: '#ccc',
-  },
   deviceItemConnected: {
     borderLeftColor: '#007AFF',
     backgroundColor: '#E8F4FD',
@@ -191,6 +246,91 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#007AFF',
     fontWeight: '600',
+  },
+  card:{
+    flex:1,
+    width:"100%",
+    backgroundColor:"#FFFFFF",
+    borderRadius:28,
+    padding:24,
+    marginBottom:20,
+  },
+
+
+  header:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    alignItems:"center",
+    marginBottom:25,
+  },
+
+
+  headerLeft:{
+    flexDirection:"row",
+    alignItems:"center",
+  },
+
+
+  bluetoothCircle:{
+    width:60,
+    height:60,
+    borderRadius:30,
+    backgroundColor:"#EAF3FF",
+    justifyContent:"center",
+    alignItems:"center",
+    marginRight:15,
+  },
+
+
+  title:{
+    fontSize:24,
+    fontWeight:"800",
+    color:"#111827",
+  },
+
+
+  subtitle:{
+    color:"#6B7280",
+    marginTop:5,
+  },
+
+
+  scanButton:{
+    height:55,
+    borderRadius:15,
+    backgroundColor:"#007AFF",
+    justifyContent:"center",
+    alignItems:"center",
+    flexDirection:"row",
+    marginBottom:20,
+  },
+
+
+  scanButtonScanning:{
+    backgroundColor:"#FEF3C7",
+  },
+
+
+  scanButtonText:{
+    color:"#fff",
+    fontWeight:"700",
+    fontSize:16,
+    marginLeft:8,
+  },
+
+
+  scanButtonScanningText:{
+    color:"#B45309",
+    fontWeight:"700",
+    fontSize:16,
+  },
+  deviceItem:{
+    flexDirection:"row",
+    backgroundColor:"#F8FAFC",
+    padding:16,
+    borderRadius:16,
+    marginBottom:10,
+    alignItems:"center",
   },
 });
 
