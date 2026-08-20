@@ -1,7 +1,6 @@
 import { View, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
 import DeviceScanScreen from '@/screens/DeviceScanScreen';
-import { BleDevice } from '@/services/bleService';
 
 export default function DeviceScanPage() {
     return (
@@ -21,11 +20,7 @@ export default function DeviceScanPage() {
             />
             <View style={styles.container}>
 
-                <DeviceScanScreen
-                    onConnect={(device: BleDevice)=>{
-                        console.log(device);
-                    }}
-                />
+                <DeviceScanScreen/>
 
             </View>
         </>

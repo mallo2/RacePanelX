@@ -125,9 +125,11 @@ Index
 
 ### Variables d'environnement
 Voir `.env.example` :
-- `REACT_APP_API_URL` - URL API RIS-Timing
-- `REACT_APP_UUID` - Votre UUID
-- `REACT_APP_CAR_NUMBER` - Numéro voiture
+- `EXPO_PUBLIC_API_URL` - URL API RIS-Timing
+- `EXPO_PUBLIC_UUID` - Votre UUID
+- `EXPO_PUBLIC_UPDATE_INTERVAL` - Intervalle de mise à jour (ms)
+- `EXPO_PUBLIC_BLE_TIMEOUT` - Timeout Bluetooth (ms)
+- `EXPO_PUBLIC_BLE_RETRIES` - Tentatives de connexion Bluetooth
 
 ---
 

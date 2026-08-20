@@ -1,19 +1,8 @@
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface BleDeviceInfo {
-  id: string;
-  name?: string;
-  width: number;
-  height: number;
-}
-
-export interface BleState {
-  devices: BleDeviceInfo[];
-  connectedDevice: BleDeviceInfo | null;
-  isScanning: boolean;
-  isConnected: boolean;
-  error: string | null;
-}
+import { BleDevice } from "@/models/ble/bleDevice";
+import { BleState } from "@/models/ble/state";
+import {TelemetryState} from "@/models/telemetry/state";
+import {SettingsState} from "@/models/settings/state";
 
 const initialState: BleState = {
   devices: [],
@@ -27,10 +16,10 @@ const bleSlice = createSlice({
   name: 'ble',
   initialState,
   reducers: {
-    setDevices: (state, action: PayloadAction<BleDeviceInfo[]>) => {
+    setDevices: (state, action: PayloadAction<BleDevice[]>) => {
       state.devices = action.payload;
     },
-    setConnectedDevice: (state, action: PayloadAction<BleDeviceInfo | null>) => {
+    setConnectedDevice: (state, action: PayloadAction<BleDevice | null>) => {
       state.connectedDevice = action.payload;
       state.isConnected = action.payload !== null;
     },
@@ -50,68 +39,85 @@ const bleSlice = createSlice({
   },
 });
 
-export interface TelemetryState {
-  currentCarNumber: number | null;
-  currentLapTime: number | null;
-  currentPosition: number | null;
-  isUpdating: boolean;
-  lastUpdate: number;
-}
-
 const telemetryInitialState: TelemetryState = {
-  currentCarNumber: null,
-  currentLapTime: null,
-  currentPosition: null,
+  position: null,
+  bestLapTime: null,
+  lastLapTime: null,
+  deltaToLeader: null,
+  gapAhead: null,
+  gapBehind: null,
   isUpdating: false,
-  lastUpdate: 0,
+  error: null,
 };
 
 const telemetrySlice = createSlice({
   name: 'telemetry',
   initialState: telemetryInitialState,
   reducers: {
-    setCurrentCarNumber: (state, action: PayloadAction<number>) => {
-      state.currentCarNumber = action.payload;
-    },
-    setCurrentLapTime: (state, action: PayloadAction<number | null>) => {
-      state.currentLapTime = action.payload;
-      state.lastUpdate = Date.now();
-    },
-    setCurrentPosition: (state, action: PayloadAction<number | null>) => {
-      state.currentPosition = action.payload;
+    setTelemetryData: (state, action: PayloadAction<Partial<TelemetryState>>) => {
+      return { ...state, ...action.payload };
     },
     setIsUpdating: (state, action: PayloadAction<boolean>) => {
       state.isUpdating = action.payload;
     },
+    setTelemetryError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    },
   },
 });
 
-export interface SettingsState {
-  carNumber: number;
-  updateInterval: number;
-}
-
 const settingsInitialState: SettingsState = {
-  carNumber: 0,
-  updateInterval: 5000,
+  carNumber: '',
+  updateInterval: process.env.EXPO_PUBLIC_UPDATE_INTERVAL ? Number.parseInt(process.env.EXPO_PUBLIC_UPDATE_INTERVAL, 10) : 3000,
+  apiUrl: process.env.EXPO_PUBLIC_API_URL || '',
+  uuid: process.env.EXPO_PUBLIC_UUID || '',
+  manualDisplay: false,
+  displayStyle: 'static',
+  largeText: true,
+  displayText: '',
+  lapDisplayMode: 'best',
+  additionalDisplayMode: 'number',
 };
 
 const settingsSlice = createSlice({
   name: 'settings',
   initialState: settingsInitialState,
   reducers: {
-    setCarNumber: (state, action: PayloadAction<number>) => {
+    setCarNumber: (state, action: PayloadAction<string>) => {
       state.carNumber = action.payload;
     },
-    setUpdateInterval: (state, action: PayloadAction<number>) => {
-      state.updateInterval = action.payload;
+    setManualDisplay: (state, action: PayloadAction<boolean>) => {
+      state.manualDisplay = action.payload;
     },
+    setLargeText: (state, action: PayloadAction<boolean>) => {
+      state.largeText = action.payload;
+    },
+    setDisplayStyle: (state, action: PayloadAction<'static' | 'slide'>) => {
+      state.displayStyle = action.payload;
+    },
+    setDisplayText: (state, action: PayloadAction<string>) => {
+      state.displayText = action.payload;
+    },
+    setLapDisplayMode: (state, action: PayloadAction<'best' | 'last' | 'delta' | 'front' | 'back'>) => {
+      state.lapDisplayMode = action.payload;
+    },
+    setAdditionalDisplayMode: (state, action: PayloadAction<'position' | 'number' | 'opponent_number'>) => {
+      state.additionalDisplayMode = action.payload;
+    }
   },
 });
 
 export const { setDevices, setConnectedDevice, setIsScanning, setError, resetBleState } = bleSlice.actions;
-export const { setCurrentCarNumber, setCurrentLapTime, setCurrentPosition, setIsUpdating } = telemetrySlice.actions;
-export const { setCarNumber, setUpdateInterval } = settingsSlice.actions;
+export const { setTelemetryData, setIsUpdating, setTelemetryError } = telemetrySlice.actions;
+export const {
+  setCarNumber,
+  setManualDisplay,
+  setLargeText,
+  setDisplayStyle,
+  setDisplayText,
+  setLapDisplayMode,
+  setAdditionalDisplayMode
+} = settingsSlice.actions;
 
 export const store = configureStore({
   reducer: {

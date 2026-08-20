@@ -1,3 +1,5 @@
+import {CarTelemetry} from '@/models/telemetry/carTelemetry';
+import sessionManager from '@/services/sessionManager';
 
 class ApiService {
   private readonly timeout = 10000;
@@ -16,47 +18,80 @@ class ApiService {
     }
   }
 
-  async getLapTime(
+  async retrieveData(
     carNumber: number,
     apiUrl: string,
-    uuid: string
-  ): Promise<number | null> {
+    uuid: string,
+    isRetry = false
+  ): Promise<CarTelemetry | null> {
     try {
-      const headers = {
-        'User-Agent': 'Mozilla/5.0',
-        Accept: '*/*',
-        Referer: 'https://live.ris-timing.be/moto',
-        Origin: 'https://live.ris-timing.be',
-      };
-
       const url = new URL(apiUrl);
-      url.searchParams.append('uuid', uuid);
+      url.searchParams.set('uuid', uuid);
 
-      const response = await this.fetchWithTimeout(url.toString(), { headers });
+      await sessionManager.ensureSession(apiUrl, isRetry);
+
+      const response = await this.fetchWithTimeout(url.toString(), {
+        headers: { 'Accept': 'application/json' },
+        credentials: 'include',
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        await sessionManager.ensureSession(
+          apiUrl,
+          isRetry || response.status === 401
+        )
+        if (!isRetry) {
+          return this.retrieveData(carNumber, apiUrl, uuid, true);
+        }
+        return null;
+      }
 
       if (!response.ok) {
-        console.error(`API Error: HTTP ${response.status}`);
         return null;
       }
 
       const payload = await response.json() as any;
 
       if (!payload.cars || !Array.isArray(payload.cars)) {
-        console.error('Invalid API response structure');
         return null;
       }
 
-      for (const car of payload.cars) {
-        if (car.car_number === carNumber) {
-          const lap = car.lap || {};
-          return lap.lap_time_ms ?? null;
-        }
+      const cars = payload.cars;
+      const sortedCars = [...cars].sort((a, b) => (a.position || 0) - (b.position || 0));
+
+      const carIndex = sortedCars.findIndex(car => car.car_number === carNumber);
+
+      if (carIndex === -1) {
+        return null;
       }
 
-      console.info(`Car number ${carNumber} not found in API response`);
-      return null;
+      const car = sortedCars[carIndex];
+      const leader = sortedCars[0];
+      const carAhead = carIndex > 0 ? sortedCars[carIndex - 1] : null;
+      const carBehind = carIndex < sortedCars.length - 1 ? sortedCars[carIndex + 1] : null;
+
+      return {
+        position: car.position ?? null,
+        bestLapTime: car.lap?.best_lap_ms ?? null,
+        lastLapTime: car.lap?.lap_time_ms ?? null,
+        deltaToLeader: car.gaps?.toLeader?.ms !== undefined ? {
+          carNumber: leader?.car_number?.toString() ?? null,
+          ms: car.gaps.toLeader.ms ?? null,
+          laps: car.gaps.toLeader.laps ?? null,
+        } : null,
+        gapAhead: car.ints?.toAhead?.ms !== undefined ? {
+          carNumber: carAhead?.car_number?.toString() ?? null,
+          ms: car.ints.toAhead.ms ?? null,
+          laps: car.ints.toAhead.laps ?? null,
+        } : null,
+        gapBehind: carBehind?.ints?.toAhead?.ms !== undefined ? {
+          carNumber: carBehind?.car_number?.toString() ?? null,
+          ms: carBehind.ints.toAhead.ms ?? null,
+          laps: carBehind.ints.toAhead.laps ?? null,
+        } : null,
+      };
     } catch (error) {
-      console.error('API Error:', error instanceof Error ? error.message : String(error));
+      console.warn('[apiService] retrieveData failed:', error);
       return null;
     }
   }
