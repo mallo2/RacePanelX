@@ -6,13 +6,13 @@ import StatusIndicator from '@/components/telemetry/StatusIndicator';
 import { RaceInfo } from '@/components/telemetry/RaceInfo';
 import { LapTimes } from '@/components/telemetry/LapTimes';
 import { GapsInfo } from '@/components/telemetry/GapsInfo';
-import { COLORS, SPACING } from "@/styles/theme";
+import { COMMON_STYLES, SPACING} from "@/styles/theme";
 
 const TelemetryScreen: React.FC = () => {
   const { carNumber, position, bestLapTime, lastLapTime, deltaToLeader, gapAhead, gapBehind, isUpdating, error } = useTelemetry();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={COMMON_STYLES.safeArea}>
       <ScrollView style={styles.container}>
         <RaceInfo carNumber={carNumber} position={position} />
         <LapTimes bestLapTime={bestLapTime} lastLapTime={lastLapTime} />
@@ -24,10 +24,6 @@ const TelemetryScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
   container: {
     flex: 1,
     paddingHorizontal: SPACING.lg,

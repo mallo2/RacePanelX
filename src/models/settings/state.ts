@@ -1,3 +1,7 @@
+import {DisplayStyle} from "@/models/settings/displayStyle";
+import { LapDisplayMode } from "./lapDisplayMode";
+import { AdditionalDisplayMode } from "./additionalDisplayMode";
+
 export interface SettingsState {
     carNumber: string;
     updateInterval: number;
@@ -5,8 +9,8 @@ export interface SettingsState {
     uuid: string;
     manualDisplay: boolean;
     largeText: boolean;
-    displayStyle: 'static' | 'slide';
+    displayStyle: DisplayStyle;
     displayText: string;
-    lapDisplayMode: 'best' | 'last' | 'delta' | 'front' | 'back';
-    additionalDisplayMode: 'position' | 'number' | 'opponent_number';
+    lapDisplayMode: LapDisplayMode;
+    additionalDisplayMode: AdditionalDisplayMode;
 }

@@ -9,13 +9,11 @@ export const COLORS = {
   textHint: '#999999',
   border: '#E5E5EA',
   inputBackground: '#FAFAFA',
-  switchTrackOff: '#F0F0F2',
-  segmentedBackground: '#E5E5EA',
   secondaryBackground: '#F0F0F2',
   waiting: "#FEF3C7",
   waitingText: "#B45309",
   error: '#FF3B30',
-
+  inactive: '#CCCCCC',
 };
 
 export const SPACING = {
@@ -57,6 +55,10 @@ export const TYPOGRAPHY: Record<string, TextStyle> = {
 };
 
 export const COMMON_STYLES: Record<string, ViewStyle> = {
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
   formGroup: {
     marginBottom: SPACING.md,
   },

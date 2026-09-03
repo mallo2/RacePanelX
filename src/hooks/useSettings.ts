@@ -1,33 +1,36 @@
-import { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { 
-  RootState, 
-  setCarNumber, 
-  setManualDisplay, 
-  setLargeText,
+import {useCallback, useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  RootState,
+  setAdditionalDisplayMode,
+  setCarNumber,
   setDisplayStyle,
-  setDisplayText, 
+  setDisplayText,
   setLapDisplayMode,
-  setAdditionalDisplayMode
+  setLargeText,
+  setManualDisplay
 } from '@/store/store';
+import {DisplayStyle} from "@/models/settings/displayStyle";
+import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
+import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
+import {formatDisplayText, LAP_MODES_WITH_OPPONENT} from "@/utils/displayTextBuilder";
 
 export const useSettings = () => {
   const dispatch = useDispatch();
   const settings = useSelector((state: RootState) => state.settings);
-
-  const updateDisplayText = useCallback((value: string) => {
-    const onlyAllowedChars = value.replace(/[^a-zA-Z0-9,:# ?!]/g, '')
-    if (settings.displayStyle === 'static') {
-      const length = settings.largeText ? 11 : 13;
-      dispatch(setDisplayText(onlyAllowedChars.slice(0, length)));
-      return;
-    }
-    dispatch(setDisplayText(onlyAllowedChars));
-  }, [dispatch, settings.displayStyle, settings.largeText]);
+  const [localText, setLocalText] = useState(settings.displayText);
 
   useEffect(() => {
-    updateDisplayText(settings.displayText);
-  }, [settings.displayStyle, settings.largeText, updateDisplayText]);
+    setLocalText(settings.displayText);
+  }, [settings.displayText]);
+
+  const handleChangeText = useCallback((value: string) => {
+    setLocalText(formatDisplayText(value, settings.displayStyle, settings.largeText));
+  }, [settings.displayStyle, settings.largeText]);
+
+  const handleEndEditing = useCallback(() => {
+    dispatch(setDisplayText(localText));
+  }, [dispatch, localText]);
 
   const updateCarNumber = useCallback((value: string) => {
     const onlyNumbers = value.replace(/\D/g, '').slice(0, 3);
@@ -42,25 +45,30 @@ export const useSettings = () => {
     dispatch(setLargeText(value));
   }, [dispatch]);
 
-  const updateDisplayStyle = useCallback((value: 'static' | 'slide') => {
+  const updateDisplayStyle = useCallback((value: DisplayStyle) => {
     dispatch(setDisplayStyle(value));
   }, [dispatch]);
 
-  const updateLapDisplayMode = useCallback((value: 'best' | 'last' | 'delta' | 'front' | 'back') => {
+  const updateLapDisplayMode = useCallback((value: LapDisplayMode) => {
+    if (!(value in LAP_MODES_WITH_OPPONENT)) {
+      dispatch(setAdditionalDisplayMode(AdditionalDisplayMode.number));
+    }
     dispatch(setLapDisplayMode(value));
   }, [dispatch]);
 
-  const updateAdditionalDisplayMode = useCallback((value: 'position' | 'number' | 'opponent_number') => {
+  const updateAdditionalDisplayMode = useCallback((value: AdditionalDisplayMode) => {
     dispatch(setAdditionalDisplayMode(value));
   }, [dispatch]);
 
   return {
     ...settings,
+    localText,
     updateCarNumber,
     updateManualDisplay,
     updateLargeText,
     updateDisplayStyle,
-    updateDisplayText,
+    handleChangeText,
+    handleEndEditing,
     updateLapDisplayMode,
     updateAdditionalDisplayMode,
   };

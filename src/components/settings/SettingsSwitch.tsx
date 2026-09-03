@@ -27,10 +27,10 @@ export const SettingsSwitch: React.FC<SettingsSwitchProps> = React.memo(({
           onValueChange={onValueChange}
           trackColor={{
             true: COLORS.primary,
-            false: COLORS.switchTrackOff,
+            false: COLORS.inactive,
           }}
           thumbColor={COLORS.surface}
-          ios_backgroundColor={COLORS.switchTrackOff}
+          ios_backgroundColor={COLORS.inactive}
         />
       </View>
     </View>

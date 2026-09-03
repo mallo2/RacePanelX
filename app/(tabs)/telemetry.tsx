@@ -6,7 +6,7 @@ export default function TelemetryPage() {
     const isConnected = useAppSelector(state => state.ble.isConnected);
     const carNumber = useAppSelector(state => state.settings.carNumber);
 
-    if (!isConnected) {
+    if (isConnected) {
         return <Message text="Device not connected" />;
     }
 

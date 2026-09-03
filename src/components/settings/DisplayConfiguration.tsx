@@ -1,59 +1,82 @@
-import React, { useMemo } from 'react';
-import { SettingsSection } from './SettingsSection';
-import { SettingsSwitch } from './SettingsSwitch';
-import { SettingsInput } from './SettingsInput';
-import { SettingsNumberInput } from './SettingsNumberInput';
-import { SettingsSegmentedControl } from './SettingsSegmentedControl';
-import { useSettings } from '@/hooks/useSettings';
+import React, {useMemo} from 'react';
+import {SettingsSection} from './SettingsSection';
+import {SettingsSwitch} from './SettingsSwitch';
+import {SettingsInput} from './SettingsInput';
+import {SettingsNumberInput} from './SettingsNumberInput';
+import {SettingsSegmentedControl} from './SettingsSegmentedControl';
+import {useSettings} from '@/hooks/useSettings';
+import {DisplayStyle} from "@/models/settings/displayStyle";
+import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
+import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
+import {getAdditionalDisplayModes} from "@/utils/displayTextBuilder";
 
 
-const STYLE_DISPLAY_OPTIONS: { label: string; value: 'static' | 'slide' }[] = [
-  { label: 'Static', value: 'static' },
-  { label: 'Slide', value: 'slide' },
+const STYLE_DISPLAY_OPTIONS: { label: string; value: DisplayStyle }[] = [
+  { label: 'Static', value: DisplayStyle.static },
+  { label: 'Slide', value: DisplayStyle.slide },
 ];
 
-const LAP_DISPLAY_OPTIONS: { label: string; value: 'best' | 'last' | 'delta' | 'front' | 'back' }[] = [
-  { label: 'Best Lap', value: 'best' },
-  { label: 'Last Lap', value: 'last' },
-  { label: 'Delta Pole', value: 'delta' },
-  { label: 'Front Gap', value: 'front' },
-  { label: 'Back Gap', value: 'back' },
+const LAP_DISPLAY_OPTIONS: { label: string; value: LapDisplayMode }[] = [
+  { label: 'Best Lap', value: LapDisplayMode.best },
+  { label: 'Last Lap', value: LapDisplayMode.last },
+  { label: 'Delta Pole', value: LapDisplayMode.delta },
+  { label: 'Front Gap', value: LapDisplayMode.front },
+  { label: 'Back Gap', value: LapDisplayMode.back },
 
-];
-
-const ADDITIONAL_DISPLAY_OPTIONS: { label: string; value: 'position' | 'number' | 'opponent_number' }[] = [
-  { label: 'Position', value: 'position' },
-  { label: 'Car Number', value: 'number' },
-  { label: 'Opponent Number', value: 'opponent_number' }
 ];
 
 export const DisplayConfiguration: React.FC = React.memo(() => {
   const {
+    localText,
     manualDisplay,
     largeText,
     displayStyle,
-    displayText,
     carNumber,
     lapDisplayMode,
     additionalDisplayMode,
     updateManualDisplay,
     updateLargeText,
     updateDisplayStyle,
-    updateDisplayText,
+    handleChangeText,
+    handleEndEditing,
     updateCarNumber,
     updateLapDisplayMode,
     updateAdditionalDisplayMode
   } = useSettings();
 
-  const maxLength = largeText ? 11 : 13;
+  const maxLength = largeText ? 8 : 13;
 
   const manualDisplayHint = useMemo(() => {
-    if (displayStyle !== 'static') {
+    if (displayStyle !== DisplayStyle.static) {
       return 'The text to display on the display';
     }
 
     return `The text to display on the display, up to ${maxLength} characters`;
   }, [displayStyle, maxLength]);
+
+  const additionalDisplayOptions = useMemo(
+      () =>
+          getAdditionalDisplayModes(lapDisplayMode).map(value => {
+            let label: string;
+
+            switch (value) {
+              case AdditionalDisplayMode.position:
+                label = 'Position';
+                break;
+
+              case AdditionalDisplayMode.number:
+                label = 'Car Number';
+                break;
+
+              case AdditionalDisplayMode.opponent_number:
+                label = 'Opponent Number';
+                break;
+            }
+
+            return {label, value};
+          }),
+      [lapDisplayMode],
+  );
 
   return (
     <SettingsSection title="Display Configuration">
@@ -92,8 +115,9 @@ export const DisplayConfiguration: React.FC = React.memo(() => {
             <SettingsInput
                 label="Display Text"
                 placeholder="Enter text to display"
-                value={displayText}
-                onChangeText={updateDisplayText}
+                value={localText}
+                onChangeText={handleChangeText}
+                onEndEditing={handleEndEditing}
                 hint={manualDisplayHint}
             />
           </>
@@ -107,10 +131,10 @@ export const DisplayConfiguration: React.FC = React.memo(() => {
             hint="Choose the lap information to display"
           />
 
-          {['delta', 'front', 'back'].includes(lapDisplayMode) && !largeText && (
+          {!largeText && (
               <SettingsSegmentedControl
                   label="Additional Display"
-                  options={ADDITIONAL_DISPLAY_OPTIONS}
+                  options={additionalDisplayOptions}
                   selectedValue={additionalDisplayMode}
                   onValueChange={updateAdditionalDisplayMode}
                   hint="Choose the additional information to display"

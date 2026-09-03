@@ -1,22 +1,20 @@
 import { PermissionsAndroid, Platform } from 'react-native';
-import { BleManager, State, Device } from 'react-native-ble-plx';
+import { BleManager, Device, State } from 'react-native-ble-plx';
+import { BLE_CONFIG, PANEL_CONFIG } from '@/config/config';
 import { BleDevice } from '@/models/ble/bleDevice';
 import { Command, CommandStatus, ErrorCode } from '@/services/commandService';
 import { bytesToBase64 } from '@/utils/base64';
 
-const SERVICE_UUID =
-    '0000fff0-0000-1000-8000-00805f9b34fb';
-
-const CHARACTERISTIC_UUID =
-    '0000fff1-0000-1000-8000-00805f9b34fb';
-
-const DEVICE_NAME = 'CoolLEDX';
-
-const SCAN_TIMEOUT_MS = 3_000;
-const STATE_TIMEOUT_MS = 3_000;
-
-// Équivalent de `command_timeout: float = 1` en Python (core/client.py).
-const ACK_TIMEOUT_MS = 1_000;
+const {
+  SERVICE_UUID,
+  CHARACTERISTIC_UUID,
+  DEVICE_NAME_PREFIX,
+  SCAN_TIMEOUT_MS,
+  STATE_TIMEOUT_MS,
+  CONNECTION_TIMEOUT_MS,
+  CONNECTION_RETRIES,
+  ACK_TIMEOUT_MS,
+} = BLE_CONFIG;
 
 let bleManager: BleManager | null = null;
 
@@ -34,16 +32,9 @@ class BleService {
     remove: () => void;
   } | null = null;
 
-  private pendingNotificationResolver:
-      (() => void) | null = null;
+  private pendingAck: (() => void) | null = null;
 
-  // Sérialise les envois : `useTelemetry` tourne sur un setInterval et un
-  // transfert peut durer plus longtemps que l'intervalle. Deux transferts
-  // concurrents entrelaceraient les chunk_id sur le fil -> ERROR sur le panneau.
   private sendQueue: Promise<unknown> = Promise.resolve();
-
-  private readonly connectionTimeoutMs = 5_000;
-  private readonly connectionRetries = 5;
 
   async initialize(): Promise<void> {
     if (Platform.OS === 'android') {
@@ -160,15 +151,15 @@ class BleService {
 
             const name = device.name || device.localName || '';
 
-            if (!name.includes(DEVICE_NAME) || devices.has(device.id)) {
+            if (!name.includes(DEVICE_NAME_PREFIX) || devices.has(device.id)) {
               return;
             }
 
             devices.set(device.id, {
               id: device.id,
               name,
-              width: 96,
-              height: 16,
+              width: PANEL_CONFIG.WIDTH,
+              height: PANEL_CONFIG.HEIGHT,
             });
           }
       );
@@ -178,12 +169,10 @@ class BleService {
   async connectToDevice(deviceId: string): Promise<void> {
     let lastError: Error | null = null;
 
-    for (let attempt = 0; attempt < this.connectionRetries; attempt++) {
+    for (let attempt = 0; attempt < CONNECTION_RETRIES; attempt++) {
       try {
-        const manager = getBleManager();
-
-        const device = await manager.connectToDevice(deviceId, {
-          timeout: this.connectionTimeoutMs,
+        const device = await getBleManager().connectToDevice(deviceId, {
+          timeout: CONNECTION_TIMEOUT_MS,
         });
 
         await device.discoverAllServicesAndCharacteristics();
@@ -192,43 +181,9 @@ class BleService {
           await device.requestMTU(512);
         }
 
-        await this.logGattProfile(device);
-
         this.device = device;
         this.isConnected = true;
-
-        // IMPORTANT :
-        // équivalent de start_notify() en Python
-        this.notificationSubscription =
-            device.monitorCharacteristicForService(
-                SERVICE_UUID,
-                CHARACTERISTIC_UUID,
-                (error, characteristic) => {
-                  if (error) {
-                    console.error(
-                        '[BLE] Notification error:',
-                        error
-                    );
-                    return;
-                  }
-
-                  console.log(
-                      '[BLE] ACK received:',
-                      characteristic?.value
-                  );
-
-                  if (this.pendingNotificationResolver) {
-                    const resolve =
-                        this.pendingNotificationResolver;
-
-                    this.pendingNotificationResolver = null;
-
-                    resolve();
-                  }
-                }
-            );
-
-        console.log('[BLE] Connected');
+        this.notificationSubscription = this.startListeningForAcks(device);
 
         return;
 
@@ -241,7 +196,7 @@ class BleService {
         this.device = null;
         this.isConnected = false;
 
-        if (attempt < this.connectionRetries - 1) {
+        if (attempt < CONNECTION_RETRIES - 1) {
           await new Promise(resolve =>
               setTimeout(resolve, 1000)
           );
@@ -250,119 +205,64 @@ class BleService {
     }
 
     throw new Error(
-        `Failed to connect after ${
-            this.connectionRetries
-        } attempts: ${lastError?.message}`
+        `Failed to connect after ${CONNECTION_RETRIES} attempts: ` +
+        `${lastError?.message}`
     );
   }
 
-  /**
-   * Diagnostic : liste les services/caractéristiques et leurs propriétés,
-   * ainsi que le MTU négocié. Sert à savoir si `fff1` accepte réellement
-   * l'écriture AVEC réponse, et quelle taille de trame passe en une écriture.
-   */
-  private async logGattProfile(device: Device): Promise<void> {
-    try {
-      console.log(`[BLE] MTU négocié = ${device.mtu}`);
+  private startListeningForAcks(device: Device): { remove: () => void } {
+    return device.monitorCharacteristicForService(
+        SERVICE_UUID,
+        CHARACTERISTIC_UUID,
+        (error) => {
+          if (error) {
+            return;
+          }
 
-      const services = await device.services();
+          const resolve = this.pendingAck;
 
-      for (const service of services) {
-        const characteristics = await service.characteristics();
-
-        for (const c of characteristics) {
-          console.log('[BLE] caractéristique', {
-            service: service.uuid,
-            uuid: c.uuid,
-            writeWithResponse: c.isWritableWithResponse,
-            writeWithoutResponse: c.isWritableWithoutResponse,
-            notifiable: c.isNotifiable,
-            indicatable: c.isIndicatable,
-            readable: c.isReadable,
-          });
+          this.pendingAck = null;
+          resolve?.();
         }
-      }
-    } catch (error) {
-      console.error('[BLE] logGattProfile a échoué:', error);
-    }
+    );
   }
 
   async disconnectDevice(): Promise<void> {
     this.notificationSubscription?.remove();
     this.notificationSubscription = null;
-    this.pendingNotificationResolver = null;
+    this.pendingAck = null;
 
     if (this.device) {
-      const manager = getBleManager();
-
-      await manager.cancelDeviceConnection(
-          this.device.id
-      );
+      await getBleManager().cancelDeviceConnection(this.device.id);
 
       this.isConnected = false;
       this.device = null;
     }
   }
 
-  /**
-   * Envoie une commande, chunk par chunk.
-   *
-   * Équivalent de send_command() en Python (core/client.py) : on itère sur les
-   * trames de la commande, on écrit chacune AVEC réponse si la commande attend
-   * une notification, et on attend l'ACK avant la trame suivante.
-   *
-   * Les appels sont sérialisés pour garantir l'ordre des chunk_id sur le fil.
-   */
   sendCommand(command: Command): Promise<void> {
     const run = this.sendQueue.then(
-        () => this.sendCommandNow(command),
-        () => this.sendCommandNow(command),
+        () => this.transmit(command),
     );
 
-    // La file ne doit pas rester en état rejeté, sinon elle propagerait
-    // l'erreur au prochain envoi.
     this.sendQueue = run.catch(() => {});
 
     return run;
   }
 
-  private async sendCommandNow(command: Command): Promise<void> {
+  private async transmit(command: Command): Promise<void> {
     if (!this.device || !this.isConnected) {
       throw new Error('Device not connected');
     }
 
-    const chunks = command.getCommandChunks();
+    const frames = command.getCommandChunks();
     const expectNotify = command.expectNotify();
 
-    console.log(
-        `[BLE] sending ${chunks.length} chunk(s), ` +
-        `expectNotify=${expectNotify}`,
-    );
-
     try {
-      for (let chunkId = 0; chunkId < chunks.length; chunkId++) {
-        const chunk = chunks[chunkId];
-
+      for (let chunkId = 0; chunkId < frames.length; chunkId++) {
         command.setCommandStatus(CommandStatus.TRANSMITTED);
 
-        // Armé AVANT l'écriture : la notification peut arriver avant que la
-        // promesse d'écriture ne résolve. Python fait de même (set_future()
-        // est appelé avant write_raw()).
-        const ack = expectNotify
-            ? this.waitForNotification(ACK_TIMEOUT_MS, chunkId)
-            : null;
-
-        try {
-          await this.writeRaw(chunk, expectNotify);
-        } catch (error) {
-          // Évite une unhandled rejection si l'écriture échoue avant l'ACK.
-          ack?.catch(() => {});
-          throw error;
-        }
-
-        if (ack) {
-          await ack;
-        }
+        await this.writeFrame(frames[chunkId], chunkId, expectNotify);
       }
 
       command.setCommandStatus(CommandStatus.ACKNOWLEDGED);
@@ -370,93 +270,59 @@ class BleService {
     } catch (error) {
       command.setCommandStatus(CommandStatus.ERROR);
       command.setErrorCode(ErrorCode.GENERAL_ERROR);
-      this.pendingNotificationResolver = null;
+      this.pendingAck = null;
 
       throw error;
     }
   }
 
-  private waitForNotification(
-      timeoutMs: number,
+  private async writeFrame(
+      frame: number[],
       chunkId: number,
+      expectNotify: boolean,
   ): Promise<void> {
+    const ack = expectNotify ? this.waitForAck(chunkId) : null;
+
+    try {
+      await this.write(frame);
+    } catch (error) {
+      ack?.catch(() => {});
+      throw error;
+    }
+
+    await ack;
+  }
+
+  private waitForAck(chunkId: number): Promise<void> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
-        this.pendingNotificationResolver = null;
+        this.pendingAck = null;
 
         reject(
             new Error(
-                `ACK timeout after ${timeoutMs}ms on chunk ${chunkId}`,
+                `ACK timeout after ${ACK_TIMEOUT_MS}ms on chunk ${chunkId}`,
             ),
         );
-      }, timeoutMs);
+      }, ACK_TIMEOUT_MS);
 
-      this.pendingNotificationResolver = () => {
+      this.pendingAck = () => {
         clearTimeout(timeout);
         resolve();
       };
     });
   }
 
-  private async writeRaw(
-      data: number[],
-      withResponse: boolean,
-  ): Promise<void> {
+
+  private async write(frame: number[]): Promise<void> {
     if (!this.device) {
       throw new Error('Device not connected');
     }
 
-    const base64String = bytesToBase64(data);
-
-    console.log(
-        `[BLE] write ${withResponse ? 'WITH' : 'WITHOUT'} response`,
-        {
-          service: SERVICE_UUID,
-          characteristic: CHARACTERISTIC_UUID,
-          length: data.length,
-          hex: data.map(b => b.toString(16).padStart(2, '0')).join(' '),
-        },
+    await this.device.writeCharacteristicWithoutResponseForService(
+        SERVICE_UUID,
+        CHARACTERISTIC_UUID,
+        bytesToBase64(frame),
     );
-
-    try {
-      if (withResponse) {
-        // Sur iOS, seul un write AVEC réponse déclenche le long write
-        // (prepare/execute) de CoreBluetooth, indispensable car les trames
-        // dépassent le MTU et requestMTU() n'existe pas sur cette plateforme.
-        try {
-          await this.device.writeCharacteristicWithResponseForService(
-              SERVICE_UUID,
-              CHARACTERISTIC_UUID,
-              base64String,
-          );
-        } catch (error) {
-          // Certaines caractéristiques n'exposent que "write without response".
-          // L'écriture AVEC réponse ayant échoué, rien n'a été transmis :
-          // réessayer SANS réponse est sans risque.
-          console.warn(
-              '[BLE] write WITH response refusé, repli SANS réponse:',
-              error,
-          );
-
-          await this.device.writeCharacteristicWithoutResponseForService(
-              SERVICE_UUID,
-              CHARACTERISTIC_UUID,
-              base64String,
-          );
-
-          console.warn('[BLE] repli SANS réponse accepté');
-        }
-      } else {
-        await this.device.writeCharacteristicWithoutResponseForService(
-            SERVICE_UUID,
-            CHARACTERISTIC_UUID,
-            base64String,
-        );
-      }
-    } catch (error) {
-      console.error('[BLE] write failed:', error);
-      throw error;
-    }
   }
 }
 

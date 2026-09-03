@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
   card: {
     ...COMMON_STYLES.card,
     flex: 1,
-    borderRadius: 16,
-    marginBottom: SPACING.lg, // On laisse le padding du ScrollView gérer l'espace en bas
+    borderRadius: SPACING.md,
+    marginBottom: SPACING.lg,
   },
 });
 

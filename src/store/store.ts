@@ -1,8 +1,11 @@
-import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { BleDevice } from "@/models/ble/bleDevice";
-import { BleState } from "@/models/ble/state";
+import {configureStore, createSlice, PayloadAction} from '@reduxjs/toolkit';
+import {BleDevice} from "@/models/ble/bleDevice";
+import {BleState} from "@/models/ble/state";
 import {TelemetryState} from "@/models/telemetry/state";
 import {SettingsState} from "@/models/settings/state";
+import {DisplayStyle} from "@/models/settings/displayStyle";
+import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
+import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
 
 const initialState: BleState = {
   devices: [],
@@ -72,11 +75,11 @@ const settingsInitialState: SettingsState = {
   apiUrl: process.env.EXPO_PUBLIC_API_URL || '',
   uuid: process.env.EXPO_PUBLIC_UUID || '',
   manualDisplay: false,
-  displayStyle: 'static',
+  displayStyle: DisplayStyle.static,
   largeText: true,
   displayText: '',
-  lapDisplayMode: 'best',
-  additionalDisplayMode: 'number',
+  lapDisplayMode: LapDisplayMode.best,
+  additionalDisplayMode: AdditionalDisplayMode.number,
 };
 
 const settingsSlice = createSlice({
@@ -92,16 +95,16 @@ const settingsSlice = createSlice({
     setLargeText: (state, action: PayloadAction<boolean>) => {
       state.largeText = action.payload;
     },
-    setDisplayStyle: (state, action: PayloadAction<'static' | 'slide'>) => {
+    setDisplayStyle: (state, action: PayloadAction<DisplayStyle>) => {
       state.displayStyle = action.payload;
     },
     setDisplayText: (state, action: PayloadAction<string>) => {
       state.displayText = action.payload;
     },
-    setLapDisplayMode: (state, action: PayloadAction<'best' | 'last' | 'delta' | 'front' | 'back'>) => {
+    setLapDisplayMode: (state, action: PayloadAction<LapDisplayMode>) => {
       state.lapDisplayMode = action.payload;
     },
-    setAdditionalDisplayMode: (state, action: PayloadAction<'position' | 'number' | 'opponent_number'>) => {
+    setAdditionalDisplayMode: (state, action: PayloadAction<AdditionalDisplayMode>) => {
       state.additionalDisplayMode = action.payload;
     }
   },

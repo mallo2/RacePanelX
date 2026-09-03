@@ -8,6 +8,7 @@ interface SettingsInputProps {
   hint?: string;
   value: string;
   onChangeText: (text: string) => void;
+  onEndEditing: () => void;
   placeholder?: string;
   keyboardType?: KeyboardTypeOptions;
 }
@@ -17,23 +18,25 @@ export const SettingsInput: React.FC<SettingsInputProps> = React.memo(({
   hint,
   value,
   onChangeText,
+  onEndEditing,
   placeholder,
   keyboardType = 'default',
-}) => {
-  return (
-    <FormField label={label} hint={hint}>
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        value={value}
-        placeholderTextColor={COLORS.textHint}
-        keyboardType={keyboardType}
-        onChangeText={onChangeText}
-        autoCapitalize="characters"
-        autoCorrect={false}
-      />
-    </FormField>
-  );
+  }) => {
+    return (
+        <FormField label={label} hint={hint}>
+          <TextInput
+              style={styles.input}
+              placeholder={placeholder}
+              value={value}
+              placeholderTextColor={COLORS.textHint}
+              keyboardType={keyboardType}
+              onChangeText={onChangeText}
+              onEndEditing={onEndEditing}
+              autoCapitalize="characters"
+              autoCorrect={true}
+          />
+        </FormField>
+    );
 });
 
 const styles = StyleSheet.create({

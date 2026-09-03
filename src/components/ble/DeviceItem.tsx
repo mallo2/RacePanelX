@@ -61,12 +61,12 @@ const styles = StyleSheet.create({
     color: COLORS.text,
   },
   deviceId: {
-    fontSize: SPACING.md,
+    fontSize: SPACING.ms,
     color: COLORS.textHint,
     marginTop: SPACING.xs,
   },
   deviceInfo: {
-    fontSize: SPACING.md,
+    fontSize: SPACING.ms,
     color: COLORS.textSecondary,
     marginTop: SPACING.xs,
   },

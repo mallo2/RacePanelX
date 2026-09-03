@@ -1,6 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import { Stack } from 'expo-router';
 import DeviceScanScreen from '@/screens/DeviceScanScreen';
+import {COLORS, SPACING} from "@/styles/theme";
 
 export default function DeviceScanPage() {
     return (
@@ -12,10 +13,10 @@ export default function DeviceScanPage() {
                     headerShadowVisible:false,
 
                     headerStyle:{
-                        backgroundColor:"#F6F7FB",
+                        backgroundColor: COLORS.background,
                     },
 
-                    headerTintColor:"#007AFF",
+                    headerTintColor: COLORS.primary,
                 }}
             />
             <View style={styles.container}>
@@ -31,8 +32,6 @@ export default function DeviceScanPage() {
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        backgroundColor:"#F6F7FB",
-        paddingHorizontal:20,
-        paddingTop:10,
+        paddingHorizontal: SPACING.lg
     },
 });

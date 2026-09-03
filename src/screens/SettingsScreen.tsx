@@ -1,32 +1,36 @@
 import React from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS, SPACING } from '@/styles/theme';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { COMMON_STYLES, SPACING} from '@/styles/theme';
 import { DeviceConnection } from '@/components/settings/DeviceConnection';
 import { DisplayConfiguration } from '@/components/settings/DisplayConfiguration';
 
 const SettingsScreen: React.FC = () => {
-  return (
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView style={styles.container}>
-          <DeviceConnection />
-          <DisplayConfiguration />
-        </ScrollView>
-      </SafeAreaView>
-  );
+    return (
+        <SafeAreaView style={COMMON_STYLES.safeArea}>
+            <KeyboardAwareScrollView
+                style={styles.container}
+                contentContainerStyle={styles.contentContainer}
+                enableOnAndroid={true}
+                keyboardShouldPersistTaps="handled"
+            >
+                <DeviceConnection />
+                <DisplayConfiguration />
+            </KeyboardAwareScrollView>
+        </SafeAreaView>
+    );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: SPACING.lg,
-    paddingTop: SPACING.lg,
-    paddingBottom: SPACING.xl,
-  },
+    container: {
+        flex: 1,
+        paddingHorizontal: SPACING.lg,
+        paddingTop: SPACING.lg,
+    },
+    contentContainer: {
+        paddingBottom: SPACING.xl,
+    },
 });
 
 export default SettingsScreen;
