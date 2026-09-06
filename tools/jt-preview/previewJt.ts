@@ -1,11 +1,12 @@
-import {createJTFile} from "./jt-generetor";
 import jtImageGenerator from "@/services/jtImageGenerator";
-import {buildDisplayText} from "@/utils/displayTextBuilder";
-import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
-import {DisplayStyle} from "@/models/settings/displayStyle";
-import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
-import {SettingsState} from "@/models/settings/state";
-import {CarTelemetry} from "@/models/telemetry/carTelemetry";
+import { buildDisplayText } from "@/utils/displayTextBuilder";
+import { LapDisplayMode } from "@/models/settings/lapDisplayMode";
+import { DisplayStyle } from "@/models/settings/displayStyle";
+import { AdditionalDisplayMode } from "@/models/settings/additionalDisplayMode";
+import { SettingsState } from "@/models/settings/state";
+import { CarTelemetry } from "@/models/telemetry/carTelemetry";
+import { createJTFile } from "./jtGenerator";
+import { renderJTFile } from "./jtRenderer";
 
 const telemetryData: CarTelemetry = {
     position: 10, // Position is between 1 and 99
@@ -53,10 +54,7 @@ const currentText = buildDisplayText(
     settings,
 );
 
-console.log(
-    "Display text:",
-    currentText,
-);
+console.log("Display text:", currentText,);
 
 const imageData =
     jtImageGenerator.generateJTImage(
@@ -67,14 +65,8 @@ const imageData =
         "cyan",
     );
 
-/**
- * IMPORTANT :
- * createJTFile attend directement number[]
- */
-const fileName =
-    createJTFile(imageData);
+const jtFileName = createJTFile(imageData);
+console.log("JT file :", jtFileName,);
 
-console.log(
-    "JT créé :",
-    fileName,
-);
+const pngFileName = renderJTFile(jtFileName);
+console.log("PNG file:",pngFileName);

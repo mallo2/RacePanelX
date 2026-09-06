@@ -1,0 +1,46 @@
+import {SettingsState} from "@/models/settings/state";
+import {testCases} from "./settingsCombinations";
+import {evaluateTestCase} from "./evaluateTestCase";
+import {isBuggy} from "./isBuggy";
+import {ImageAnalysis} from "./imageAnalysis";
+
+export interface Bug {
+    index: number;
+    text: string;
+    telemetryCase: string;
+    settings: SettingsState;
+    details: ImageAnalysis;
+}
+
+export interface FuzzerResult {
+    testCount: number;
+    bugs: Bug[];
+}
+
+export function runFuzzer(): FuzzerResult {
+    const bugs: Bug[] = [];
+    let testIndex = 0;
+
+    for (const {telemetryName, telemetryData, settings} of testCases()) {
+        const result = evaluateTestCase(telemetryData, settings);
+        if (!result) {
+            continue;
+        }
+
+        const {text, analysis} = result;
+
+        if (isBuggy(analysis, settings)) {
+            bugs.push({
+                index: testIndex,
+                text,
+                telemetryCase: telemetryName,
+                settings,
+                details: analysis,
+            });
+        }
+
+        testIndex++;
+    }
+
+    return {testCount: testIndex, bugs};
+}

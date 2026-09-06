@@ -40,6 +40,8 @@ export function useBleDisplaySync(
                 pendingRef.current = false;
 
                 const currentText = buildDisplayText(telemetryData, settings);
+                if (!currentText) { continue; }
+
                 const currentMode = settings.manualDisplay ? settings.displayStyle : DisplayStyle.static;
 
                 const imageData = jtImageGenerator.generateJTImage(
