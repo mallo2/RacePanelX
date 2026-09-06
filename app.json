@@ -1,24 +1,23 @@
 {
   "expo": {
-    "name": "CoolLedX-RN",
-    "slug": "CoolLedX-RN",
+    "name": "RacePanelX",
+    "slug": "racepanelx",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "coolledxrn",
+    "scheme": "racepanelx",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "be.malloryBouchard.RacePanelX",
       "infoPlist": {
-        "NSBluetoothCentralUsageDescription": "This app needs access to Bluetooth to scan for and connect to CoolLEDX LED panels.",
-        "NSBluetoothAlwaysUsageDescription": "This app needs access to Bluetooth to scan for and connect to CoolLEDX LED panels even when the app is in background.",
+        "NSBluetoothCentralUsageDescription": "This app needs access to Bluetooth to scan for and connect to CoolLedX LED panels.",
+        "NSBluetoothAlwaysUsageDescription": "This app needs access to Bluetooth to scan for and connect to CoolLedX LED panels even when the app is in background.",
         "NSLocationWhenInUseUsageDescription": "This app needs location access to scan for Bluetooth devices."
-      },
-      "bundleIdentifier": "com.anonymous.CoolLedXRN"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B1026",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -32,7 +31,7 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
       ],
-      "package": "com.anonymous.CoolLedXRN"
+      "package": "be.malloryBouchard.RacePanelX"
     },
     "web": {
       "output": "static",
@@ -42,9 +41,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#0B1026",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 220
         }
       ],
       "expo-router",
@@ -56,7 +55,7 @@
             "peripheral",
             "central"
           ],
-          "bluetoothAlwaysPermission": "This app needs access to Bluetooth to scan for and connect to CoolLEDX LED panels even when the app is in background."
+          "bluetoothAlwaysPermission": "This app needs access to Bluetooth to scan for and connect to CoolLedX LED panels even when the app is in background."
         }
       ]
     ],

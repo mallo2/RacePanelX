@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1175 410" fill="none">
+    <defs>
+        <linearGradient
+                id="rx-blue"
+                x1="1110"
+                y1="20"
+                x2="520"
+                y2="390"
+                gradientUnits="userSpaceOnUse"
+        >
+            <stop offset="0%" stop-color="#19E8F5"/>
+            <stop offset="45%" stop-color="#08BFEF"/>
+            <stop offset="100%" stop-color="#075CFF"/>
+        </linearGradient>
+
+        <linearGradient
+                id="rx-white"
+                x1="330"
+                y1="40"
+                x2="330"
+                y2="375"
+                gradientUnits="userSpaceOnUse"
+        >
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="100%" stop-color="#E9EEF5"/>
+        </linearGradient>
+    </defs>
+
+    <path
+            fill="url(#rx-white)"
+            d="
+      M31 367
+      L151 367
+      L215 256
+      L323 255
+      L426 375
+      L500 312
+      L456 257
+      L497 246
+      L519 235
+      L604 172
+      L626 153
+      L552 65
+      L535 49
+      L515 40
+      L494 37
+      L239 37
+      L168 119
+      L468 119
+      L478 122
+      L486 130
+      L489 137
+      L488 150
+      L478 162
+      L468 166
+      L151 166
+      Z
+    "
+    />
+
+    <path
+            fill="url(#rx-blue)"
+            d="
+      M567 37
+      L885 395
+      L1036 395
+      L865 205
+      L1110 13
+      L951 14
+      L798 133
+      L706 36
+      Z
+    "
+    />
+
+    <path
+            fill="url(#rx-blue)"
+            d="
+      M742 272
+      L680 204
+      L441 395
+      L584 395
+      L738 277
+      Z
+    "
+    />
+</svg>
