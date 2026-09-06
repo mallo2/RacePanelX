@@ -1,0 +1,47 @@
+name: Display Fuzzer
+
+on:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: fuzzer-${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  fuzz:
+    name: Run display fuzzer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run display fuzzer
+        run: npm run fuzzer
+
+      - name: Generate bug report
+        if: failure()
+        run: npm run fuzzer:report
+
+      - name: Upload bug report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzzer-report
+          path: generated-jt/report
+          if-no-files-found: ignore
+          retention-days: 14
