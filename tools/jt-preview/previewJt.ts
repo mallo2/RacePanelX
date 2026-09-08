@@ -49,10 +49,7 @@ const settings: SettingsState = {
     additionalDisplayMode: AdditionalDisplayMode.number, // AdditionalDisplayMode.number, AdditionalDisplayMode.oppenent_number, AdditionalDisplayMode.position
 };
 
-const currentText = buildDisplayText(
-    telemetryData,
-    settings,
-);
+const currentText = buildDisplayText(telemetryData, settings);
 
 console.log("Display text:", currentText,);
 

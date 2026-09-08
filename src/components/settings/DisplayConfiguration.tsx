@@ -9,23 +9,23 @@ import {DisplayStyle} from "@/models/settings/displayStyle";
 import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
 import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
 import {getAdditionalDisplayModes} from "@/utils/displayTextBuilder";
+import {formatMessage, messages} from '@/i18n/messages';
 
 
 const STYLE_DISPLAY_OPTIONS: { label: string; value: DisplayStyle }[] = [
-  { label: 'Static', value: DisplayStyle.static },
-  { label: 'Slide', value: DisplayStyle.slide },
+  { label: messages.settings.styleStatic, value: DisplayStyle.static },
+  { label: messages.settings.styleSlide, value: DisplayStyle.slide },
 ];
 
 const LAP_DISPLAY_OPTIONS: { label: string; value: LapDisplayMode }[] = [
-  { label: 'Best Lap', value: LapDisplayMode.best },
-  { label: 'Last Lap', value: LapDisplayMode.last },
-  { label: 'Delta Pole', value: LapDisplayMode.delta },
-  { label: 'Front Gap', value: LapDisplayMode.front },
-  { label: 'Back Gap', value: LapDisplayMode.back },
-
+  { label: messages.settings.lapBest, value: LapDisplayMode.best },
+  { label: messages.settings.lapLast, value: LapDisplayMode.last },
+  { label: messages.settings.lapDelta, value: LapDisplayMode.delta },
+  { label: messages.settings.lapFront, value: LapDisplayMode.front },
+  { label: messages.settings.lapBack, value: LapDisplayMode.back },
 ];
 
-export const DisplayConfiguration: React.FC = React.memo(() => {
+export const DisplayConfiguration: React.FC = React.memo(function DisplayConfiguration() {
   const {
     localText,
     manualDisplay,
@@ -48,10 +48,10 @@ export const DisplayConfiguration: React.FC = React.memo(() => {
 
   const manualDisplayHint = useMemo(() => {
     if (displayStyle !== DisplayStyle.static) {
-      return 'The text to display on the display';
+      return messages.settings.manualHintScroll;
     }
 
-    return `The text to display on the display, up to ${maxLength} characters`;
+    return formatMessage(messages.settings.manualHintText, {max: maxLength});
   }, [displayStyle, maxLength]);
 
   const additionalDisplayOptions = useMemo(
@@ -61,15 +61,15 @@ export const DisplayConfiguration: React.FC = React.memo(() => {
 
             switch (value) {
               case AdditionalDisplayMode.position:
-                label = 'Position';
+                label = messages.settings.position;
                 break;
 
               case AdditionalDisplayMode.number:
-                label = 'Car Number';
+                label = messages.settings.carNumber;
                 break;
 
               case AdditionalDisplayMode.opponent_number:
-                label = 'Opponent Number';
+                label = messages.settings.opponentNumber;
                 break;
             }
 
@@ -79,25 +79,25 @@ export const DisplayConfiguration: React.FC = React.memo(() => {
   );
 
   return (
-    <SettingsSection title="Display Configuration">
+    <SettingsSection title={messages.settings.displayConfiguration}>
       <SettingsNumberInput
-          label="Car Number"
+          label={messages.settings.carNumber}
           placeholder="123"
           value={carNumber}
           onChangeText={updateCarNumber}
-          hint="The car number to track on the LED display"
+          hint={messages.settings.carNumberHint}
       />
 
       <SettingsSwitch
-        label="Manual display"
-        hint="Manual display requires you to enter the text to send yourself"
+        label={messages.settings.manualDisplay}
+        hint={messages.settings.manualDisplayHint}
         value={manualDisplay}
         onValueChange={updateManualDisplay}
       />
 
       <SettingsSwitch
-        label="Large text"
-        hint="Large text will be displayed in a larger font size on the LED display"
+        label={messages.settings.largeText}
+        hint={messages.settings.largeTextHint}
         value={largeText}
         onValueChange={updateLargeText}
       />
@@ -105,16 +105,16 @@ export const DisplayConfiguration: React.FC = React.memo(() => {
       {manualDisplay ? (
           <>
             <SettingsSegmentedControl
-                label="Display Style"
+                label={messages.settings.displayStyle}
                 options={STYLE_DISPLAY_OPTIONS}
                 selectedValue={displayStyle}
                 onValueChange={updateDisplayStyle}
-                hint="Choose the display style for the text"
+                hint={messages.settings.displayStyleHint}
             />
 
             <SettingsInput
-                label="Display Text"
-                placeholder="Enter text to display"
+                label={messages.settings.displayText}
+                placeholder={messages.settings.displayTextPlaceholder}
                 value={localText}
                 onChangeText={handleChangeText}
                 onEndEditing={handleEndEditing}
@@ -124,20 +124,20 @@ export const DisplayConfiguration: React.FC = React.memo(() => {
         ) : (
         <>
           <SettingsSegmentedControl
-            label="Lap Display"
+            label={messages.settings.lapDisplay}
             options={LAP_DISPLAY_OPTIONS}
             selectedValue={lapDisplayMode}
             onValueChange={updateLapDisplayMode}
-            hint="Choose the lap information to display"
+            hint={messages.settings.lapDisplayHint}
           />
 
           {!largeText && (
               <SettingsSegmentedControl
-                  label="Additional Display"
+                  label={messages.settings.additionalDisplay}
                   options={additionalDisplayOptions}
                   selectedValue={additionalDisplayMode}
                   onValueChange={updateAdditionalDisplayMode}
-                  hint="Choose the additional information to display"
+                  hint={messages.settings.additionalDisplayHint}
               />
           )}
         </>

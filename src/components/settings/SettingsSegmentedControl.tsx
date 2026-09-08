@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { COLORS, SPACING } from '@/styles/theme';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { BrandGradientFill } from '@/components/ui/BrandGradientFill';
+import { COLORS, RADIUS, SPACING } from '@/styles/theme';
 import { FormField } from './FormField';
 
 interface SettingsSegmentedControlOption<T> {
@@ -17,37 +18,36 @@ interface SettingsSegmentedControlProps<T> {
 }
 
 const SettingsSegmentedControlInner = <T extends string | number>({
-                                                                    options,
-                                                                    selectedValue,
-                                                                    onValueChange,
-                                                                    label,
-                                                                    hint,
-                                                                  }: SettingsSegmentedControlProps<T>) => {
-  return (
-      <FormField label={label} hint={hint}>
-        <View style={styles.chipRow}>
-          {options.map((option) => {
-            const isActive = selectedValue === option.value;
-            return (
-                <TouchableOpacity
-                    key={option.value}
-                    activeOpacity={0.7}
-                    style={[styles.chip, isActive && styles.chipActive]}
-                    onPress={() => onValueChange(option.value)}
-                >
-                  <Text
-                      style={[styles.chipText, isActive && styles.chipTextActive]}
-                      numberOfLines={1}
-                  >
-                    {option.label}
-                  </Text>
-                </TouchableOpacity>
-            );
-          })}
-        </View>
-      </FormField>
-  );
-};
+  options,
+  selectedValue,
+  onValueChange,
+  label,
+  hint,
+}: SettingsSegmentedControlProps<T>) => (
+  <FormField label={label} hint={hint}>
+    <View style={styles.chipRow}>
+      {options.map((option) => {
+        const isActive = selectedValue === option.value;
+        return (
+          <TouchableOpacity
+            key={option.value}
+            activeOpacity={0.75}
+            style={[styles.chip, isActive && styles.chipActive]}
+            onPress={() => onValueChange(option.value)}
+          >
+            {isActive && <BrandGradientFill radius={RADIUS.pill} />}
+            <Text
+              style={[styles.chipText, isActive && styles.chipTextActive]}
+              numberOfLines={1}
+            >
+              {option.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  </FormField>
+);
 
 export const SettingsSegmentedControl = React.memo(SettingsSegmentedControlInner) as typeof SettingsSegmentedControlInner;
 
@@ -56,27 +56,28 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: SPACING.sm,
-    marginTop: SPACING.xs,
+    marginTop: 2,
+    marginBottom: 6,
   },
   chip: {
-    paddingVertical: SPACING.sm,
-    paddingHorizontal: SPACING.md,
-    borderRadius: 999,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: RADIUS.pill,
     borderWidth: 1,
     borderColor: COLORS.border,
-    backgroundColor: COLORS.surface,
+    backgroundColor: COLORS.surfaceWeak,
+    overflow: 'hidden',
   },
   chipActive: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    borderColor: 'transparent',
   },
   chipText: {
-    fontSize: SPACING.ms,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
     color: COLORS.textSecondary,
   },
   chipTextActive: {
-    color: COLORS.surface,
-    fontWeight: '600',
+    color: '#FFFFFF',
+    fontWeight: '700',
   },
 });

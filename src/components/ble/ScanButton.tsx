@@ -1,80 +1,78 @@
 import React from 'react';
 import {
-  TouchableOpacity,
-  Text,
   ActivityIndicator,
+  StyleProp,
   StyleSheet,
+  Text,
+  TouchableOpacity,
   ViewStyle,
 } from 'react-native';
-import { Ionicons } from "@expo/vector-icons";
-import {COLORS, SPACING} from "@/styles/theme";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { BrandGradientFill } from '@/components/ui/BrandGradientFill';
+import { COLORS, RADIUS, SPACING } from '@/styles/theme';
+import { messages } from '@/i18n/messages';
 
 interface ScanButtonProps {
   isScanning: boolean;
   onPress: () => void;
-  style?: ViewStyle | ViewStyle[];
+  style?: StyleProp<ViewStyle>;
 }
 
-const ScanButton: React.FC<ScanButtonProps> = ({ isScanning, onPress, style }) => {
-  return (
-    <TouchableOpacity
-      style={[
-        styles.scanButton,
-        isScanning && styles.scanButtonScanning,
-        style,
-      ]}
-      onPress={onPress}
-      disabled={isScanning}
-    >
-      {isScanning ? (
-        <>
-          <ActivityIndicator
-            color={COLORS.waitingText}
-            style={{ marginRight: SPACING.sm }}
-          />
-          <Text style={styles.scanButtonScanningText}>
-            Scanning...
-          </Text>
-        </>
-      ) : (
-        <>
-          <Ionicons
-            name="search"
-            size={SPACING.lg}
-            color={COLORS.surface}
-          />
-          <Text style={styles.scanButtonText}>
-            Scan
-          </Text>
-        </>
-      )}
-    </TouchableOpacity>
-  );
-};
+const ScanButton: React.FC<ScanButtonProps> = ({ isScanning, onPress, style }) => (
+  <TouchableOpacity
+    activeOpacity={0.85}
+    style={[styles.button, isScanning && styles.buttonScanning, style]}
+    onPress={onPress}
+    disabled={isScanning}
+  >
+    {!isScanning && <BrandGradientFill radius={RADIUS.md} />}
+
+    {isScanning ? (
+      <>
+        <ActivityIndicator size="small" color={COLORS.waitingText} />
+        <Text style={styles.scanningText}>{messages.scan.scanning}</Text>
+      </>
+    ) : (
+      <>
+        <MaterialCommunityIcons name="magnify" size={22} color="#FFFFFF" />
+        <Text style={styles.text}>{messages.scan.scan}</Text>
+      </>
+    )}
+  </TouchableOpacity>
+);
 
 const styles = StyleSheet.create({
-  scanButton: {
-    height: 55,
-    borderRadius: SPACING.md,
-    backgroundColor: COLORS.primary,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    marginBottom: SPACING.xl,
+  button: {
+    height: 56,
+    borderRadius: RADIUS.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: SPACING.lg,
+    overflow: 'hidden',
+    shadowColor: COLORS.blue,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.45,
+    shadowRadius: 14,
+    elevation: 8,
   },
-  scanButtonScanning: {
+  buttonScanning: {
     backgroundColor: COLORS.waiting,
+    borderWidth: 1,
+    borderColor: COLORS.waitingBorder,
+    shadowOpacity: 0,
+    elevation: 0,
   },
-  scanButtonText: {
-    color: COLORS.surface,
-    fontWeight: "700",
-    fontSize: SPACING.md,
-    marginLeft: SPACING.sm,
+  text: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
   },
-  scanButtonScanningText: {
+  scanningText: {
     color: COLORS.waitingText,
-    fontWeight: "700",
-    fontSize: SPACING.md,
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
 

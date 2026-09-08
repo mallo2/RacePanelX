@@ -1,87 +1,20 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1175 410" fill="none">
-    <defs>
-        <linearGradient
-                id="rx-blue"
-                x1="1110"
-                y1="20"
-                x2="520"
-                y2="390"
-                gradientUnits="userSpaceOnUse"
-        >
-            <stop offset="0%" stop-color="#19E8F5"/>
-            <stop offset="45%" stop-color="#08BFEF"/>
-            <stop offset="100%" stop-color="#075CFF"/>
-        </linearGradient>
-
-        <linearGradient
-                id="rx-white"
-                x1="330"
-                y1="40"
-                x2="330"
-                y2="375"
-                gradientUnits="userSpaceOnUse"
-        >
-            <stop offset="0%" stop-color="#FFFFFF"/>
-            <stop offset="100%" stop-color="#E9EEF5"/>
-        </linearGradient>
-    </defs>
-
-    <path
-            fill="url(#rx-white)"
-            d="
-      M31 367
-      L151 367
-      L215 256
-      L323 255
-      L426 375
-      L500 312
-      L456 257
-      L497 246
-      L519 235
-      L604 172
-      L626 153
-      L552 65
-      L535 49
-      L515 40
-      L494 37
-      L239 37
-      L168 119
-      L468 119
-      L478 122
-      L486 130
-      L489 137
-      L488 150
-      L478 162
-      L468 166
-      L151 166
-      Z
-    "
-    />
-
-    <path
-            fill="url(#rx-blue)"
-            d="
-      M567 37
-      L885 395
-      L1036 395
-      L865 205
-      L1110 13
-      L951 14
-      L798 133
-      L706 36
-      Z
-    "
-    />
-
-    <path
-            fill="url(#rx-blue)"
-            d="
-      M742 272
-      L680 204
-      L441 395
-      L584 395
-      L738 277
-      Z
-    "
-    />
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1899 828" fill="none">
+  <title>RPX logo — vectorized from supplied artwork</title>
+  <desc>Clean vector reconstruction of the supplied RPX logo, preserving the white and blue gradient treatment.</desc>
+  <defs>
+    <linearGradient id="whiteGradient" x1="330" y1="40" x2="330" y2="790" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#E9EEF5"/>
+    </linearGradient>
+    <linearGradient id="blueGradient" x1="1810" y1="70" x2="800" y2="790" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#19E8F5"/>
+      <stop offset="45%" stop-color="#08BFEF"/>
+      <stop offset="100%" stop-color="#075CFF"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#whiteGradient)" fill-rule="evenodd" d="M 111 159 L 200 248 L 564 246 L 579 249 L 588 257 L 593 268 L 594 284 L 588 312 L 578 331 L 563 345 L 545 351 L 157 355 L 130 424 L 50 650 L 204 648 L 275 450 L 421 448 L 618 701 L 766 700 L 557 446 L 604 438 L 641 420 L 679 385 L 705 343 L 713 322 L 722 271 L 720 242 L 705 210 L 673 177 L 650 164 L 626 159 Z"/>
+  <path fill="url(#whiteGradient)" fill-rule="evenodd" d="M 665 533 L 756 641 L 822 446 L 1056 443 L 1089 437 L 1114 428 L 1132 419 L 1156 402 L 1179 378 L 1195 354 L 1204 333 L 1210 304 L 1210 285 L 1203 261 L 1116 159 L 699 158 L 775 247 L 1037 248 L 1062 256 L 1074 267 L 1080 282 L 1080 296 L 1077 309 L 1068 326 L 1056 339 L 1038 348 L 726 351 Z"/>
+  <path fill="url(#blueGradient)" fill-rule="evenodd" d="M 1369 442 L 1282 348 L 797 684 L 776 701 L 1002 700 Z"/>
+  <path fill="url(#blueGradient)" fill-rule="evenodd" d="M 1134 158 L 1208 243 L 1379 429 L 1604 700 L 1868 700 L 1491 368 L 1868 83 L 1653 83 L 1385 279 L 1253 158 Z"/>
 </svg>

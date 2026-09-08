@@ -36,14 +36,8 @@ function getBit(
     pixelHeight: number,
 ): number {
     const bytesPerColumn = Math.ceil(pixelHeight / 8);
-
-    const byteIndex =
-        x * bytesPerColumn +
-        Math.floor(y / 8);
-
-    const bitIndex =
-        7 - (y % 8);
-
+    const byteIndex = x * bytesPerColumn + Math.floor(y / 8);
+    const bitIndex = 7 - (y % 8);
     return (plane[byteIndex] >> bitIndex) & 1;
 }
 
@@ -54,11 +48,9 @@ export function renderGraffitiDataToPngBuffer(
     pixelHeight: number,
     scale: number = SCALE,
 ): Buffer {
-    const bytesPerPlane =
-        (pixelWidth * pixelHeight) / 8;
+    const bytesPerPlane = (pixelWidth * pixelHeight) / 8;
 
-    const expectedLength =
-        bytesPerPlane * 3;
+    const expectedLength = bytesPerPlane * 3;
 
     if (graffitiData.length < expectedLength) {
         throw new Error(
@@ -84,36 +76,21 @@ export function renderGraffitiDataToPngBuffer(
             const green = getBit(greenPlane, x, y, pixelHeight);
             const blue = getBit(bluePlane, x, y, pixelHeight);
 
-            const colorIndex =
-                (blue << 2) |
-                (green << 1) |
-                red;
+            const colorIndex = (blue << 2) | (green << 1) | red;
 
             const [redColor, greenColor, blueColor] = COLORS[colorIndex];
 
             for (let sy = 0; sy < scale; sy++) {
                 for (let sx = 0; sx < scale; sx++) {
+                    const px = x * scale + sx;
+                    const py = y * scale + sy;
 
-                    const px =
-                        x * scale + sx;
+                    const index = (outputWidth * py + px) << 2;
 
-                    const py =
-                        y * scale + sy;
-
-                    const index =
-                        (outputWidth * py + px) << 2;
-
-                    png.data[index] =
-                        redColor;
-
-                    png.data[index + 1] =
-                        greenColor;
-
-                    png.data[index + 2] =
-                        blueColor;
-
-                    png.data[index + 3] =
-                        255;
+                    png.data[index] = redColor;
+                    png.data[index + 1] = greenColor;
+                    png.data[index + 2] = blueColor;
+                    png.data[index + 3] = 255;
                 }
             }
         }
@@ -123,10 +100,7 @@ export function renderGraffitiDataToPngBuffer(
 }
 
 export function renderJTFile(jtFilePath: string): string {
-    const content = fs.readFileSync(
-        jtFilePath,
-        "utf8",
-    );
+    const content = fs.readFileSync(jtFilePath, "utf8");
 
     const jt: JTFile[] = JSON.parse(content);
 
@@ -150,11 +124,7 @@ export function renderJTFile(jtFilePath: string): string {
         );
     }
 
-    const pngBuffer = renderGraffitiDataToPngBuffer(
-        graffitiData,
-        pixelWidth,
-        pixelHeight,
-    );
+    const pngBuffer = renderGraffitiDataToPngBuffer(graffitiData, pixelWidth, pixelHeight);
 
     const pngPath =
         jtFilePath.replace(
@@ -162,14 +132,9 @@ export function renderJTFile(jtFilePath: string): string {
             ".png",
         );
 
-    fs.writeFileSync(
-        pngPath,
-        pngBuffer,
-    );
+    fs.writeFileSync(pngPath, pngBuffer);
 
-    console.log(
-        `🖼️ Preview JT : ${pngPath}`,
-    );
+    console.log(`🖼️ Preview JT : ${pngPath}`);
 
     return pngPath;
 }

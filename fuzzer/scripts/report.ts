@@ -18,11 +18,6 @@ interface BugGroup {
     bugs: BugWithImage[];
 }
 
-/**
- * Two bugs that produce the EXACT same render (same bytes) are grouped
- * together: no point generating the same image 40 times when a single
- * broken `displayText` repeats across 40 settings combinations.
- */
 function hashImageData(imageData: number[]): string {
     return crypto
         .createHash("sha1")

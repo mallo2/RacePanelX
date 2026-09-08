@@ -1,37 +1,32 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import TelemetryCard from '@/components/telemetry/TelemetryCard';
-import {SPACING} from "@/styles/theme";
+import { messages } from '@/i18n/messages';
 
 interface RaceInfoProps {
-    carNumber: string;
-    position: number | null;
+  carNumber: string;
+  position: number | null;
 }
 
-export const RaceInfo: React.FC<RaceInfoProps> = ({ carNumber, position }) => {
-  return (
-    <View style={styles.row}>
-      <TelemetryCard 
-        label="Numéro" 
-        value={carNumber} 
-        style={styles.halfCard} 
-      />
-      <TelemetryCard 
-        label="Position" 
-        value={position?.toString() || '-'} 
-        style={styles.halfCard} 
-      />
-    </View>
-  );
-};
+export const RaceInfo: React.FC<RaceInfoProps> = ({ carNumber, position }) => (
+  <View style={styles.row}>
+    <TelemetryCard label={messages.telemetry.carNumber} value={carNumber} style={styles.halfCard} />
+    <TelemetryCard
+      label={messages.telemetry.position}
+      value={position != null ? `P${position}` : '--'}
+      isLarge
+      style={styles.halfCard}
+    />
+  </View>
+);
 
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.zero,
+    gap: 12,
+    marginBottom: 4,
   },
   halfCard: {
-    width: '48%',
+    flex: 1,
   },
 });

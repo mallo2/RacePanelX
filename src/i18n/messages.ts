@@ -1,0 +1,202 @@
+import { NativeModules, Platform } from 'react-native';
+
+export const en = {
+  common: {
+    back: 'Back',
+    refresh: 'Refresh',
+    connected: 'Connected',
+    disconnect: 'Disconnect',
+  },
+  tabs: {
+    telemetry: 'Telemetry',
+    settings: 'Settings',
+  },
+  telemetry: {
+    eyebrow: 'Race Panel X',
+    title: 'Telemetry',
+    subtitle: 'Car #{car} live',
+    syncing: 'Syncing…',
+    carNumber: 'Number',
+    position: 'Position',
+    bestLap: 'Best lap',
+    lastLap: 'Last lap',
+    deltaPole: 'Delta to pole (#{car})',
+    gapAhead: 'Gap ahead (#{car})',
+    gapBehind: 'Gap behind (#{car})',
+    noDeviceTitle: 'No device connected',
+    noDeviceMessage: 'Connect your LED panel to start watching live telemetry.',
+    noDeviceAction: 'Connect a device',
+    noCarTitle: 'Car number missing',
+    noCarMessage: 'Set your car number to start tracking lap times.',
+    noCarAction: 'Configure',
+  },
+  settings: {
+    eyebrow: 'Race Panel X',
+    title: 'Settings',
+    subtitle: 'Connect your panel and configure the display',
+    deviceConnected: 'Device connected',
+    deviceConnection: 'Device connection',
+    connectDevice: 'Connect a device',
+    connectHint: 'Scan for nearby CoolLedX panels over Bluetooth.',
+    displayConfiguration: 'Display configuration',
+    carNumber: 'Car number',
+    carNumberHint: 'The car number tracked on the LED display',
+    manualDisplay: 'Manual display',
+    manualDisplayHint: 'Type the text to send to the display yourself',
+    largeText: 'Large text',
+    largeTextHint: 'Shows the text in a larger font size',
+    displayStyle: 'Display style',
+    displayStyleHint: 'Choose how the text is displayed',
+    styleStatic: 'Static',
+    styleSlide: 'Slide',
+    displayText: 'Display text',
+    displayTextPlaceholder: 'Type your text',
+    lapDisplay: 'Lap display',
+    lapDisplayHint: 'Choose which lap information to display',
+    lapBest: 'Best lap',
+    lapLast: 'Last lap',
+    lapDelta: 'Delta pole',
+    lapFront: 'Gap ahead',
+    lapBack: 'Gap behind',
+    additionalDisplay: 'Additional display',
+    additionalDisplayHint: 'Choose which extra information to display',
+    position: 'Position',
+    opponentNumber: 'Opponent number',
+    manualHintText: 'The text shown on the display, up to {max} characters',
+    manualHintScroll: 'The text shown on the display',
+  },
+  scan: {
+    eyebrow: 'Bluetooth',
+    title: 'Connect a device',
+    panelTitle: 'LED panel',
+    panelSubtitle: 'Connect your CoolLedX over Bluetooth',
+    clearList: 'Clear list',
+    scan: 'Scan',
+    scanning: 'Scanning…',
+    noDevices: 'No devices found',
+    deviceFound: '{count} device found',
+    devicesFound: '{count} devices found',
+    unknownDevice: 'Unknown device',
+  },
+};
+
+export type Messages = typeof en;
+
+const fr: Messages = {
+  common: {
+    back: 'Retour',
+    refresh: 'Actualiser',
+    connected: 'Connecté',
+    disconnect: 'Déconnecter',
+  },
+  tabs: {
+    telemetry: 'Télémétrie',
+    settings: 'Réglages',
+  },
+  telemetry: {
+    eyebrow: 'Race Panel X',
+    title: 'Télémétrie',
+    subtitle: 'Voiture #{car} en direct',
+    syncing: 'Synchronisation…',
+    carNumber: 'Numéro',
+    position: 'Position',
+    bestLap: 'Meilleur tour',
+    lastLap: 'Dernier tour',
+    deltaPole: 'Delta pole (#{car})',
+    gapAhead: 'Écart devant (#{car})',
+    gapBehind: 'Écart derrière (#{car})',
+    noDeviceTitle: 'Aucun appareil connecté',
+    noDeviceMessage: 'Connectez votre panneau LED pour suivre la télémétrie en direct.',
+    noDeviceAction: 'Connecter un appareil',
+    noCarTitle: 'Numéro de voiture manquant',
+    noCarMessage: 'Renseignez votre numéro de voiture pour lancer le suivi des tours.',
+    noCarAction: 'Configurer',
+  },
+  settings: {
+    eyebrow: 'Race Panel X',
+    title: 'Réglages',
+    subtitle: 'Connectez votre panneau et configurez l’affichage',
+    deviceConnected: 'Appareil connecté',
+    deviceConnection: 'Connexion de l’appareil',
+    connectDevice: 'Connecter un appareil',
+    connectHint: 'Scannez les panneaux CoolLedX à proximité via Bluetooth.',
+    displayConfiguration: 'Configuration de l’affichage',
+    carNumber: 'Numéro de voiture',
+    carNumberHint: 'Numéro de voiture suivi sur l’écran LED',
+    manualDisplay: 'Affichage manuel',
+    manualDisplayHint: 'Saisissez vous-même le texte à envoyer sur l’écran',
+    largeText: 'Grand texte',
+    largeTextHint: 'Affiche le texte dans une police plus grande',
+    displayStyle: 'Style d’affichage',
+    displayStyleHint: 'Choisissez le style d’affichage du texte',
+    styleStatic: 'Fixe',
+    styleSlide: 'Défilement',
+    displayText: 'Texte à afficher',
+    displayTextPlaceholder: 'Saisissez votre texte',
+    lapDisplay: 'Affichage des tours',
+    lapDisplayHint: 'Choisissez l’information de tour à afficher',
+    lapBest: 'Meilleur tour',
+    lapLast: 'Dernier tour',
+    lapDelta: 'Delta pole',
+    lapFront: 'Écart devant',
+    lapBack: 'Écart derrière',
+    additionalDisplay: 'Informations complémentaires',
+    additionalDisplayHint: 'Choisissez l’information complémentaire à afficher',
+    position: 'Position',
+    opponentNumber: 'Numéro adversaire',
+    manualHintText: 'Le texte affiché sur le panneau, jusqu’à {max} caractères',
+    manualHintScroll: 'Le texte affiché sur le panneau',
+  },
+  scan: {
+    eyebrow: 'Bluetooth',
+    title: 'Connecter un appareil',
+    panelTitle: 'Panneau LED',
+    panelSubtitle: 'Connectez votre CoolLedX via Bluetooth',
+    clearList: 'Effacer la liste',
+    scan: 'Scanner',
+    scanning: 'Scan en cours…',
+    noDevices: 'Aucun appareil détecté',
+    deviceFound: '{count} appareil trouvé',
+    devicesFound: '{count} appareils trouvés',
+    unknownDevice: 'Panneau inconnu',
+  },
+};
+
+function resolveLanguageCode(): string {
+  try {
+    if (Platform.OS === 'web') {
+      return typeof navigator !== 'undefined' ? navigator.language : 'en';
+    }
+
+    if (Platform.OS === 'ios') {
+      const settings = NativeModules.SettingsManager?.settings as
+        | { AppleLocale?: string; AppleLanguages?: string[] }
+        | undefined;
+      return settings?.AppleLocale ?? settings?.AppleLanguages?.[0] ?? 'en';
+    }
+
+    const i18n = NativeModules.I18nManager as { localeIdentifier?: string } | undefined;
+    return i18n?.localeIdentifier ?? 'en';
+  } catch {
+    return 'en';
+  }
+}
+
+const languageCode = resolveLanguageCode().toLowerCase().replace('_', '-').split('-')[0];
+
+/** True when the device language is French, otherwise English is used as default. */
+export const isFrench = languageCode === 'fr';
+
+/** Messages for the device language (defaults to English). */
+export const messages: Messages = isFrench ? fr : en;
+
+/** Replaces `{key}` placeholders in a translated template. */
+export function formatMessage(
+  template: string,
+  values?: Record<string, string | number>,
+): string {
+  if (!values) return template;
+  return template.replace(/\{(\w+)\}/g, (match, key: string) =>
+    key in values ? String(values[key]) : match,
+  );
+}

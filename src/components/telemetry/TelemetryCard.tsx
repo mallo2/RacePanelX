@@ -1,59 +1,74 @@
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
-import {COLORS, SPACING} from "@/styles/theme";
+import { Platform, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { GradientText } from '@/components/ui/GradientText';
+import { COLORS, RADIUS, SPACING } from '@/styles/theme';
 
 interface TelemetryCardProps {
   label: string;
   value: string | number | null;
   isLarge?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
-const TelemetryCard: React.FC<TelemetryCardProps> = ({ 
-  label, 
-  value, 
-  isLarge = false,
-  style 
-}) => {
+const MONO = Platform.select({
+  ios: 'Menlo',
+  android: 'monospace',
+  default: 'monospace',
+});
+
+const TelemetryCard: React.FC<TelemetryCardProps> = ({ label, value, isLarge = false, style }) => {
+  const displayValue = value ?? '--';
+
   return (
-    <View style={[styles.card, style]}>
+    <GlassCard style={[styles.card, style]} radius={RADIUS.md} contentStyle={styles.content}>
       <Text style={styles.label}>{label}</Text>
-      <Text style={[styles.value, isLarge && styles.largeValue]}>
-        {value ?? '--'}
-      </Text>
-    </View>
+      {isLarge ? (
+        <GradientText
+          style={[styles.largeValue, styles.mono]}
+          numberOfLines={1}
+          adjustsFontSizeToFit
+        >
+          {displayValue}
+        </GradientText>
+      ) : (
+        <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.value, styles.mono]}>
+          {displayValue}
+        </Text>
+      )}
+    </GlassCard>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: COLORS.surface,
-    padding: SPACING.md,
-    borderRadius: SPACING.sm,
     marginBottom: SPACING.ms,
-    borderLeftWidth: SPACING.xs,
-    borderLeftColor: COLORS.primary,
-    shadowColor: '#000',
-    shadowOffset: { width: SPACING.zero, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: SPACING.xxs,
-    elevation: SPACING.xxs,
+  },
+  content: {
+    padding: SPACING.md,
   },
   label: {
-    fontSize: SPACING.ms,
     color: COLORS.textHint,
-    marginBottom: SPACING.xs,
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.4,
     textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  mono: {
+    fontFamily: MONO,
+    fontVariant: ['tabular-nums'],
   },
   value: {
-    fontSize: SPACING.lg,
-    fontWeight: '600',
     color: COLORS.text,
+    fontSize: 22,
+    fontWeight: '700',
   },
   largeValue: {
-    fontSize: SPACING.xxl,
-    fontWeight: 'bold',
-    color: COLORS.primary,
+    color: COLORS.text,
+    fontSize: 36,
+    fontWeight: '700',
+    letterSpacing: -1.5,
   },
 });
 

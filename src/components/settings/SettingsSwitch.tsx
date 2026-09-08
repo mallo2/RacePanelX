@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Switch, StyleSheet, Text } from 'react-native';
-import {COLORS, COMMON_STYLES, SPACING, TYPOGRAPHY} from '@/styles/theme';
+import { StyleSheet, Switch, Text, View } from 'react-native';
+import { COLORS, SPACING, TYPOGRAPHY } from '@/styles/theme';
 
 interface SettingsSwitchProps {
   label: string;
@@ -9,12 +9,12 @@ interface SettingsSwitchProps {
   onValueChange: (value: boolean) => void;
 }
 
-export const SettingsSwitch: React.FC<SettingsSwitchProps> = React.memo(({
+export const SettingsSwitch: React.FC<SettingsSwitchProps> = React.memo(function SettingsSwitch({
   label,
   hint,
   value,
   onValueChange,
-}) => {
+}) {
   return (
     <View style={styles.container}>
       <View style={styles.row}>
@@ -25,12 +25,9 @@ export const SettingsSwitch: React.FC<SettingsSwitchProps> = React.memo(({
         <Switch
           value={value}
           onValueChange={onValueChange}
-          trackColor={{
-            true: COLORS.primary,
-            false: COLORS.inactive,
-          }}
-          thumbColor={COLORS.surface}
-          ios_backgroundColor={COLORS.inactive}
+          trackColor={{ true: COLORS.primary, false: 'rgba(255,255,255,0.22)' }}
+          thumbColor="#FFFFFF"
+          ios_backgroundColor="rgba(255,255,255,0.22)"
         />
       </View>
     </View>
@@ -39,23 +36,22 @@ export const SettingsSwitch: React.FC<SettingsSwitchProps> = React.memo(({
 
 const styles = StyleSheet.create({
   container: {
-    ...COMMON_STYLES.formGroup,
+    marginBottom: 14,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: SPACING.xs,
   },
   textContainer: {
     flex: 1,
-    marginRight: SPACING.sm,
+    marginRight: SPACING.md,
   },
   label: {
     ...TYPOGRAPHY.label,
   },
   hint: {
     ...TYPOGRAPHY.hint,
-    marginTop: SPACING.xxs,
+    marginTop: 3,
   },
 });

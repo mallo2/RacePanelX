@@ -1,37 +1,20 @@
 import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import { Provider } from 'react-redux';
 import { store } from '@/store/store';
-
+import { COLORS } from '@/styles/theme';
+import React from "react";
 
 export default function RootLayout() {
     return (
         <Provider store={store}>
+            <StatusBar style="light" />
             <Stack
                 screenOptions={{
-                    headerShown:false,
-                    headerBackTitle:"",
+                    headerShown: false,
+                    contentStyle: { backgroundColor: COLORS.backgroundDeep },
                 }}
-            >
-                <Stack.Screen
-                    name="(tabs)"
-                    options={{
-                        headerShown:false,
-                        title:"",
-                    }}
-                />
-
-                <Stack.Screen
-                    name="scan-device"
-                    options={{
-                        headerShown:true,
-                        title:"",
-                        headerTitle:"",
-                        headerBackTitle:"",
-                        headerLargeTitle:false,
-                        headerShadowVisible:false,
-                    }}
-                />
-            </Stack>
+            />
         </Provider>
     );
 }

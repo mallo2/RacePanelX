@@ -20,7 +20,7 @@ function getGlyphWidth(font: JTFont, char: string): number {
 export function renderGlyph(font: JTFont, char: string): Buffer {
     const glyphRows = font.glyphs[char];
     if (!glyphRows) {
-        throw new Error(`Caractère "${char}" absent de cette font.`);
+        throw new Error(`Char "${char}" not found in this font.`);
     }
 
     const width = getGlyphWidth(font, char);

@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import TelemetryCard from '@/components/telemetry/TelemetryCard';
 import { formatGap } from '@/utils/timeFormatters';
-import {SPACING} from "@/styles/theme";
-import {GapData} from "@/models/telemetry/gapData";
+import { SPACING } from '@/styles/theme';
+import { formatMessage, messages } from '@/i18n/messages';
+import { GapData } from '@/models/telemetry/gapData';
 
 interface GapsInfoProps {
   deltaToLeader: GapData | null;
@@ -12,31 +13,31 @@ interface GapsInfoProps {
 }
 
 export const GapsInfo: React.FC<GapsInfoProps> = ({ deltaToLeader, gapAhead, gapBehind }) => {
-
   const formattedDeltaPole = useMemo(() => formatGap(deltaToLeader), [deltaToLeader]);
   const formattedGapAhead = useMemo(() => formatGap(gapAhead), [gapAhead]);
   const formattedGapBehind = useMemo(() => formatGap(gapBehind, false), [gapBehind]);
 
   return (
     <View>
-      <TelemetryCard 
-        label={`Delta Pole (#${deltaToLeader?.carNumber || '-'})`}
-        value={formattedDeltaPole} 
-        isLarge 
+      <TelemetryCard
+        label={formatMessage(messages.telemetry.deltaPole, { car: deltaToLeader?.carNumber ?? '-' })}
+        value={formattedDeltaPole}
+        isLarge
       />
 
       <View style={styles.row}>
-        <TelemetryCard 
-          label={`Gap Avant (#${gapAhead?.carNumber || '-'})`}
-          value={formattedGapAhead} 
-          style={styles.halfCard} 
+        <TelemetryCard
+          label={formatMessage(messages.telemetry.gapAhead, { car: gapAhead?.carNumber ?? '-' })}
+          value={formattedGapAhead}
+          style={styles.halfCard}
         />
-        <TelemetryCard 
-          label={`Gap Arrière (#${gapBehind?.carNumber || '-'})`}
-          value={formattedGapBehind} 
-          style={styles.halfCard} 
+        <TelemetryCard
+          label={formatMessage(messages.telemetry.gapBehind, { car: gapBehind?.carNumber ?? '-' })}
+          value={formattedGapBehind}
+          style={styles.halfCard}
         />
       </View>
+      <View style={styles.spacer} />
     </View>
   );
 };
@@ -44,10 +45,12 @@ export const GapsInfo: React.FC<GapsInfoProps> = ({ deltaToLeader, gapAhead, gap
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.zero,
+    gap: 12,
   },
   halfCard: {
-    width: '48%',
+    flex: 1,
+  },
+  spacer: {
+    height: SPACING.md,
   },
 });

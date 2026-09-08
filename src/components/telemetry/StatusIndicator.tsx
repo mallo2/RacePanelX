@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
-import { COLORS, SPACING } from "@/styles/theme";
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { COLORS, SPACING } from '@/styles/theme';
+import { messages } from '@/i18n/messages';
 
 interface StatusIndicatorProps {
   isUpdating: boolean;
@@ -10,60 +12,62 @@ interface StatusIndicatorProps {
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({ isUpdating, error }) => {
   if (error) {
     return (
-      <View style={styles.container}>
-        <View style={styles.errorStatus}>
-          <Text style={styles.errorText}>{error}</Text>
+      <View style={styles.wrap}>
+        <View style={[styles.pill, styles.errorPill]}>
+          <MaterialCommunityIcons name="alert-circle-outline" size={16} color={COLORS.error} />
+          <Text style={[styles.text, styles.errorText]} numberOfLines={2}>
+            {error}
+          </Text>
         </View>
       </View>
     );
   }
 
-  if (!isUpdating) return <View style={styles.container} />;
+  if (!isUpdating) return null;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.updateStatus}>
-        <ActivityIndicator size="small" color={COLORS.primary} />
-        <Text style={styles.statusText}>Mise à jour...</Text>
+    <View style={styles.wrap}>
+      <View style={[styles.pill, styles.syncPill]}>
+        <ActivityIndicator size="small" color={COLORS.cyanBright} />
+        <Text style={[styles.text, styles.syncText]}>{messages.telemetry.syncing}</Text>
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    height: 48,
-    marginVertical: SPACING.md,
+  wrap: {
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: SPACING.sm,
   },
-  updateStatus: {
+  pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.background,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: SPACING.lg,
-  },
-  errorStatus: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.background,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
-    borderRadius: SPACING.sm,
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: COLORS.error,
   },
-  statusText: {
-    marginLeft: SPACING.sm,
-    color: COLORS.primary,
+  syncPill: {
+    backgroundColor: 'rgba(44,232,255,0.10)',
+    borderColor: 'rgba(44,232,255,0.30)',
+  },
+  errorPill: {
+    backgroundColor: COLORS.errorSurface,
+    borderColor: COLORS.errorBorder,
+    maxWidth: '90%',
+  },
+  text: {
+    fontSize: 13,
     fontWeight: '600',
+  },
+  syncText: {
+    color: COLORS.textSecondary,
   },
   errorText: {
     color: COLORS.error,
-    fontWeight: '500',
-    fontSize: SPACING.ms,
+    flexShrink: 1,
   },
 });
 

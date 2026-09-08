@@ -8,10 +8,7 @@ const MODE = 1;
 const SPEED = 255;
 const STAY_TIME = 3;
 
-const OUTPUT_DIR = path.resolve(
-    process.cwd(),
-    "generated-jt",
-);
+const OUTPUT_DIR = path.resolve(process.cwd(), "generated-jt",);
 
 function generateFileName(): string {
     const now = new Date();
@@ -25,9 +22,7 @@ function generateFileName(): string {
     return `image-${timestamp}-${random}.jt`;
 }
 
-export function createJTFile(
-    imageData: number[],
-): string {
+export function createJTFile(imageData: number[]): string {
     if (!Array.isArray(imageData)) {
         throw new TypeError("imageData must be an array.",);
     }
@@ -60,27 +55,11 @@ export function createJTFile(
         },
     ];
 
-    fs.mkdirSync(
-        OUTPUT_DIR,
-        {
-            recursive: true,
-        },
-    );
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-    const fileName =
-        generateFileName();
-
-    const filePath =
-        path.join(
-            OUTPUT_DIR,
-            fileName,
-        );
-
-    fs.writeFileSync(
-        filePath,
-        JSON.stringify(jtData),
-        "utf8",
-    );
+    const fileName = generateFileName();
+    const filePath = path.join(OUTPUT_DIR, fileName);
+    fs.writeFileSync(filePath, JSON.stringify(jtData), "utf8");
 
     return filePath;
 }

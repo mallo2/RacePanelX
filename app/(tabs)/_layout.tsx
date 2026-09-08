@@ -1,41 +1,27 @@
+import React from 'react';
 import { Tabs } from 'expo-router';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import {COLORS} from "@/styles/theme";
+import { FloatingTabBar } from '@/components/ui/FloatingTabBar';
+import { messages } from '@/i18n/messages';
 
 export default function TabsLayout() {
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: COLORS.primary,
-                tabBarInactiveTintColor: COLORS.inactive,
-                headerShown:false,
+                headerShown: false,
             }}
+            tabBar={(props) => <FloatingTabBar {...props} />}
         >
             <Tabs.Screen
                 name="telemetry"
                 options={{
-                    title: 'Telemetry',
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons
-                            name="speedometer"
-                            size={size}
-                            color={color}
-                        />
-                    ),
+                    title: messages.tabs.telemetry,
                 }}
             />
 
             <Tabs.Screen
                 name="index"
                 options={{
-                    title: 'Configuration',
-                    tabBarIcon: ({ color, size }) => (
-                        <MaterialCommunityIcons
-                            name="cog"
-                            size={size}
-                            color={color}
-                        />
-                    ),
+                    title: messages.tabs.settings,
                 }}
             />
         </Tabs>

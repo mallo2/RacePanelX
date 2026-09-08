@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { COLORS, COMMON_STYLES, SPACING, TYPOGRAPHY } from '@/styles/theme';
+import { StyleSheet, Text, View } from 'react-native';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from '@/styles/theme';
 
 interface SettingsSectionProps {
   title: string;
@@ -8,35 +9,38 @@ interface SettingsSectionProps {
   rightElement?: React.ReactNode;
 }
 
-export const SettingsSection: React.FC<SettingsSectionProps> = ({ title, children, rightElement }) => {
-  return (
-    <View style={styles.section}>
-      <View style={styles.header}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        {rightElement}
-      </View>
-      {children}
+export const SettingsSection: React.FC<SettingsSectionProps> = ({ title, children, rightElement }) => (
+  <GlassCard radius={RADIUS.lg} style={styles.section} contentStyle={styles.content}>
+    <View style={styles.header}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {rightElement}
     </View>
-  );
-};
+    <View style={styles.divider} />
+    {children}
+  </GlassCard>
+);
 
 const styles = StyleSheet.create({
   section: {
-    ...COMMON_STYLES.card,
+    marginBottom: SPACING.md,
+  },
+  content: {
+    paddingTop: 18,
+    paddingHorizontal: 18,
+    paddingBottom: 22,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    paddingBottom: SPACING.sm,
   },
   sectionTitle: {
     ...TYPOGRAPHY.sectionTitle,
-    marginBottom: SPACING.zero,
-    borderBottomWidth: SPACING.zero,
-    paddingBottom: SPACING.zero,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: COLORS.border,
+    marginTop: 14,
+    marginBottom: 18,
   },
 });
