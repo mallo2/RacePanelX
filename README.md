@@ -1,283 +1,114 @@
-# 🎯 CoolLEDX Ris-Timing - React Native Edition
+<p align="center">
+  <img
+    src="assets/images/racepanelx-logo.svg"
+    alt="RacePanelX"
+    width="420"
+    style="background-color:#0B1026;border-radius:20px;padding:18px 26px;"
+  />
+</p>
 
-**Migration complète de Python vers React Native** | iOS & Android | Telemetry en direct pour motorsport
+# RacePanelX
 
----
+**Turn a CoolLEDX 96×16 LED panel into a live race-timing display driven by RIS-Timing telemetry.**
 
-## 📱 À propos
+RacePanelX is a mobile companion for CoolLEDX LED matrix panels. It connects to the panel over Bluetooth, pulls live timing data from the RIS-Timing API, and renders it directly on the panel — so your position, lap times and gaps are always visible at the track, right from your pocket.
 
-CoolLEDX Ris-Timing est une application mobile qui contrôle des panneaux LED de 96x16 pixels via Bluetooth pour afficher en temps réel :
-- ⏱️ **Temps de tour** en direct depuis l'API RIS-Timing
-- 🏎️ **Position** du pilote en championnat
-- 🔄 **Mise à jour** automatique toutes les 5 secondes
+## Features
 
-C'est une migration complète de la version Python originale vers React Native, compatible **iOS et Android**.
+- **Bluetooth panel control** — scan, connect and drive CoolLEDX 96×16 LED panels (react-native-ble-plx), with Android/iOS permission flows, connection retries, and acknowledgement-based frame transmission for reliable image uploads.
+- **Live RIS-Timing telemetry** — position, best lap, last lap, delta and gaps ahead/behind, refreshed automatically on a configurable interval.
+- **Smart session handling** — the app manages RIS-Timing session cookies and renews them silently before they expire.
+- **Full display control** — choose between best/last lap, delta, or gap views; enable large or small panel fonts; show the opponent car number; or send your own manual text in static or sliding style.
+- **Native look and feel** — custom UI kit built on React Native primitives: glass cards, gradient accents and an aurora background, with tab navigation between Telemetry and Settings.
+- **Bilingual** — English and French messages, selected from the device language.
+- **iOS & Android** — built with Expo SDK 57.
 
----
+## From a Python project to a mobile app
 
-## 🚀 Démarrage rapide
+RacePanelX did not start as an app. The story began with a **Python desktop project** that drove CoolLEDX panels: a core driver handled the Bluetooth communication and the low-level LED protocol, and scripts fetched RIS-Timing data and turned it into panel-ready images on a computer.
 
-### 1. Installation
+Rebuilding it as a mobile application meant rethinking the whole architecture:
+
+- The **protocol layer** (command encoding, escaping, checksums, chunked image frames) was ported from Python and lives in `src/protocol` and `src/services/commandService.ts`.
+- The **rendering pipeline** that converts live timing into 96×16 bitmap frames was recreated in TypeScript (`src/services/jtImageGenerator.ts` and the JT font definitions), pixel-for-pixel compatible with the original tooling.
+- The Python CLI flow became three native screens — **Telemetry**, **Settings** and **Device scan** — glued together with Expo Router and a Redux Toolkit store.
+- Desktop-only BLE access was replaced by the mobile BLE stack, with state handling designed for phone lifecycles.
+
+The result is RacePanelX: the same LED panel logic that used to live on a laptop, now running natively on iOS and Android next to the panel itself.
+
+## Quality gates: testing and CI
+
+The project relies on an automated CI pipeline (GitHub Actions) to keep regressions out of `main`. Every pull request runs:
+
+| Job | What it does | Guardrail |
+|---|---|---|
+| **Unit & UI tests** | Vitest unit suite plus a Jest UI suite rendering components and hooks | hard thresholds of 95% statements/functions/lines and 90% branches |
+| **Mutation testing** | Stryker mutates the source and verifies the tests catch every change | fails below a 90% mutation score |
+| **Display fuzzer** | Sweeps 10,000+ telemetry × display-setting combinations and detects overflowing or empty renders | any detected layout bug fails the build and produces an HTML report |
+| **Lint** | ESLint over the whole codebase | zero errors |
+| **SonarCloud & CodeQL** | Static analysis and security scanning | quality gate |
+
+### Run the checks locally
+
 ```bash
-cd CoolLedX-RN
+npm test                 # unit tests (Vitest) + UI tests (Jest)
+npm run test:coverage    # coverage reports with thresholds enforced
+npm run test:mutation    # Stryker mutation score
+npm run fuzzer           # display fuzzer (10,000+ combinations)
+npm run lint             # ESLint
+npm run test:e2e         # Maestro end-to-end flows (see .e2e)
+```
+
+## Getting started
+
+**Prerequisites**
+
+- Node.js 22+ and npm
+- iOS: Xcode simulator or the Expo Go app
+- Android: Android Studio emulator or the Expo Go app
+- A CoolLEDX panel with Bluetooth enabled (for real-device use)
+
+**Install and run**
+
+```bash
 npm install
+cp .env.example .env     # then edit with your own values
+npm run start            # press a / i / w for Android, iOS or web
 ```
 
-### 2. Configuration
-```bash
-cp .env.example .env
-# Éditer .env avec vos paramètres API
-```
+**Environment variables**
 
-### 3. Lancer
-```bash
-npm run start
-```
+| Variable | Purpose |
+|---|---|
+| `EXPO_PUBLIC_API_URL` | RIS-Timing live API base URL |
+| `EXPO_PUBLIC_UUID` | Your RIS-Timing UUID |
+| `EXPO_PUBLIC_UPDATE_INTERVAL` | Telemetry refresh interval in ms |
+| `EXPO_PUBLIC_BLE_TIMEOUT` | Bluetooth operation timeout in ms |
+| `EXPO_PUBLIC_BLE_RETRIES` | Bluetooth connection retry count |
 
-Pour plus de détails, consultez **[SETUP.md](./SETUP.md)**
-
----
-
-## 📋 Fonctionnalités
-
-| Fonctionnalité | Description | Status |
-|---|---|:---:|
-| 🔍 **BLE Scanner** | Scanne et connexion aux panneaux LED | ✅ |
-| 📊 **Live Telemetry** | Affichage en direct des temps de tour | ✅ |
-| ⚙️ **Settings** | Configuration API et numéro voiture | ✅ |
-| 🔄 **Auto-update** | Mise à jour automatique via intervalle configurable | ✅ |
-| 💾 **State Persistence** | Redux pour gestion d'état centralisée | ✅ |
-| 📱 **iOS Support** | Build native pour iPhone/iPad | ✅ |
-| 🤖 **Android Support** | Build native pour appareils Android | ✅ |
-
----
-
-## 🏗️ Architecture
-
-> 🧪 Une batterie complète de tests (unitaires, cas limites, régression) est
-> documentée dans **[TESTING.md](./TESTING.md)** — lancez-la avec `npm test`.
-
-### Services (Business Logic)
-
-**BLE & Protocole**
-- `bleService.ts` - Communication Bluetooth (scan, connect, send)
-- `commandService.ts` - Encodage protocole LED (commands, checksums)
-
-**Telemetry**
-- `apiService.ts` - Fetch données API RIS-Timing
-- `jtImageGenerator.ts` - Génération bitmap → images JT
-
-### UI Screens
-- **DeviceScanScreen** - Scanner et connexion
-- **TelemetryScreen** - Affichage live avec update auto
-- **SettingsScreen** - Configuration API/UUID/Car#
-
-### State Management
-- **Redux Toolkit** - BLE state, Telemetry state, Settings state
-
-### Navigation
-- **React Navigation** - Bottom tab tabs (Scan, Telemetry, Settings)
+## Project layout
 
 ```
-Index
-├── Redux Store
-│   ├── BLE Slice
-│   ├── Telemetry Slice
-│   └── Settings Slice
-└── Navigation (Tab)
-    ├── DeviceScanScreen
-    ├── TelemetryScreen
-    └── SettingsScreen
+app/                 # Expo Router entry points and tabs
+src/
+  screens/           # Telemetry, Settings, Device scan
+  components/        # ui / settings / ble / telemetry building blocks
+  services/          # BLE, API, session, command and image-generation logic
+  hooks/             # BLE, telemetry and settings React hooks
+  store/             # Redux Toolkit slices and typed hooks
+  protocol/          # CoolLEDX wire protocol encoder
+  utils/             # text builders, time formatting, base64
+  i18n/              # English and French messages
+  styles/            # theme tokens and asset helpers
+fuzzer/              # display fuzzer engine and bug reporter
+tests/               # Vitest unit suites and Jest UI suites
+.e2e/                # Maestro end-to-end flows
 ```
 
----
+## Credits
 
-## 📦 Dépendances principales
+The original CoolLEDX driver work comes from **UpDryTwist** and **TheDavSmasher**; **mallo2** integrated the RIS-Timing telemetry and migrated everything to React Native as RacePanelX.
 
-```json
-{
-  "react-native": "0.86.2",
-  "react-native-ble-plx": "Bluetooth",
-  "@react-navigation": "Navigation",
-  "@reduxjs/toolkit": "State",
-  "axios": "HTTP"
-}
-```
+## License
 
----
-
-## 📝 Documentation
-
-| Document | Description |
-|----------|-------------|
-| **[SETUP.md](./SETUP.md)** | Installation et lancement |
-| **[MIGRATION_GUIDE.md](./MIGRATION_GUIDE.md)** | Architecture détaillée et port Python |
-| **[CHANGELOG.md](./CHANGELOG.md)** | Historique de la migration |
-
----
-
-## 🔌 Configuration
-
-### Permissions requises
-
-**Android**
-- Bluetooth, location (pour scan)
-
-**iOS**
-- Bluetooth, location (pour scan)
-
-### Variables d'environnement
-Voir `.env.example` :
-- `EXPO_PUBLIC_API_URL` - URL API RIS-Timing
-- `EXPO_PUBLIC_UUID` - Votre UUID
-- `EXPO_PUBLIC_UPDATE_INTERVAL` - Intervalle de mise à jour (ms)
-- `EXPO_PUBLIC_BLE_TIMEOUT` - Timeout Bluetooth (ms)
-- `EXPO_PUBLIC_BLE_RETRIES` - Tentatives de connexion Bluetooth
-
----
-
-## 📊 Structure des dossiers
-
-```
-CoolLedX-RN/
-├── src/
-│   ├── services/              # Logique métier
-│   │   ├── bleService.ts
-│   │   ├── commandService.ts
-│   │   ├── apiService.ts
-│   │   └── jtImageGenerator.ts
-│   ├── screens/               # UI Screens
-│   │   ├── DeviceScanScreen.tsx
-│   │   ├── TelemetryScreen.tsx
-│   │   └── SettingsScreen.tsx
-│   ├── store/                 # Redux
-│   │   └── store.ts
-│   ├── config/                # Configuration
-│   │   └── config.ts
-│   └── components/            # Composants réutilisables
-├── Index.tsx                     # Root component
-├── app.json                    # Configuration Expo
-├── package.json                # Dependencies
-├── SETUP.md                    # Guide démarrage
-├── MIGRATION_GUIDE.md          # Guide technique
-└── CHANGELOG.md                # Historique
-```
-
----
-
-## 🎓 Migration depuis Python
-
-### Ports principaux
-
-| Python | React Native | Module |
-|--------|---|---|
-| `core/client.py` | `bleService.ts` | BLE communication |
-| `core/commands.py` | `commandService.ts` | Command encoding |
-| `core/basic_protocol.py` | `commandService.ts` | Protocol (escape, checksum) |
-| `core/render.py` | `jtImageGenerator.ts` | Image rendering |
-| `pro/apiCall.py` | `apiService.ts` | API calls |
-| `pro/generate_jt.py` | `jtImageGenerator.ts` | JT generation |
-
-### Changements clés
-
-| Aspect | Avant (Python) | Après (RN) |
-|--------|---|---|
-| Bluetooth | Bleak library | React Native BLE Plx |
-| Async | asyncio | Promise/async-await |
-| State | Local variables | Redux Toolkit |
-| UI | CLI | React Native tabs |
-| Storage | Local files | Redux + AsyncStorage |
-
----
-
-## 🧪 Testing
-
-À implémenter :
-- [ ] Unit tests (Jest)
-- [ ] Integration tests (BLE + API)
-- [ ] E2E tests (Detox)
-
----
-
-## 🐛 Troubleshooting
-
-**Aucun appareil trouvé ?**
-- Vérifier Bluetooth activé
-- Vérifier les permissions (location sur Android)
-- Rapprocher le téléphone
-
-**Erreur connexion ?**
-- Vérifier portée Bluetooth
-- Vérifier que le panneau n'est pas connecté ailleurs
-- Redémarrer le panneau
-
-**Erreur API ?**
-- Vérifier URL API et UUID dans Settings
-- Vérifier le car number existe
-- Vérifier connexion Internet
-
-Voir **[SETUP.md](./SETUP.md#-troubleshooting)** pour plus.
-
----
-
-## 🚀 Prochaines étapes
-
-### Phase 2 : Testing
-- [ ] Test réel sur device CoolLEDX
-- [ ] Test Android et iOS
-- [ ] Debug et optimisations
-
-### Phase 3 : Features
-- [ ] Support multi-panneaux
-- [ ] Offline mode avec cache
-- [ ] Historique telemetry
-
-### Phase 4 : Deployment
-- [ ] Index Store (iOS)
-- [ ] Google Play (Android)
-
----
-
-## 📊 Statistiques
-
-| Métrique | Valeur |
-|----------|--------|
-| Langages | TypeScript + React Native |
-| Fichiers | 4 services + 3 screens + 1 store |
-| Dépendances | 7 principales |
-| Lignes de code | ~1,500 TypeScript |
-| État d'avancement | ✅ Structure complète |
-
----
-
-## 📞 Support
-
-- 📖 Consultez la **[documentation complète](./MIGRATION_GUIDE.md)**
-- 🐛 Reportez les bugs avec détails d'erreur
-- 💡 Proposez des améliorations
-
----
-
-## 📄 License
-
-Ce projet combine deux licences :
-- **Core** : MIT License (UpDryTwist + TheDavSmasher)
-- **Pro** : Propriété de mallo2
-
-Voir `core/LICENSE` et `pro/LICENSE` pour détails.
-
----
-
-## ✨ Crédits
-
-- **UpDryTwist** - CoolLEDX driver original
-- **TheDavSmasher** - Refactoring driver (fixes)
-- **mallo2** - Integration telemetry + migration React Native
-
----
-
-**Version:** 1.0.0  
-**Status:** ✅ Prête pour testing  
-**Dernière mise à jour:** 2026-08-04
-
-[📖 Documentation complète](./MIGRATION_GUIDE.md) | [🚀 Démarrer](./SETUP.md) | [📊 Changelog](./CHANGELOG.md)
+See the [LICENSE](LICENSE) file.

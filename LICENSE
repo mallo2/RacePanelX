@@ -1,21 +1,141 @@
-The MIT License (MIT)
+# Source Available / Non-Commercial License
 
-Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)
+**Copyright (c) 2026 Mallory BOUCHARD**
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+All rights reserved, except for the rights expressly granted below and the rights granted by third-party licenses.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## 1. Permission to View the Source Code
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+The source code of this project is publicly available for the purposes of transparency, inspection, study, security review, education, and community collaboration.
+
+Making the source code publicly available does not grant a general right to use, copy, modify, distribute, publish, sell, or commercially exploit the Software.
+
+## 2. Permitted Activities
+
+Without obtaining additional permission, anyone may:
+
+* view and inspect the source code;
+* study how the Software works;
+* review the source code for security or educational purposes;
+* propose bug fixes, improvements, or other contributions;
+* discuss, review, or analyze the Software publicly.
+
+Submitting a contribution does not grant permission to use, distribute, or commercially exploit the Software.
+
+## 3. Restricted Activities
+
+Without prior written permission from the copyright holder, you may **not**:
+
+* use or execute the Software;
+* use the Software for personal purposes;
+* use the Software for commercial purposes;
+* modify and use the Software;
+* distribute or redistribute the Software;
+* publish modified versions of the Software;
+* sell or sublicense the Software;
+* include the Software in another product or service;
+* create or operate a SaaS, cloud service, API, or hosted service based on the Software;
+* use the Software to provide a paid service;
+* create a commercial derivative work;
+* create or operate a competing product or service based substantially on the Software;
+* use the Software for any other purpose not expressly permitted by this license.
+
+## 4. Commercial Use
+
+Any commercial use of the Software or of the original contributions contained in this project requires prior written authorization from the copyright holder.
+
+Commercial use includes, but is not limited to:
+
+* selling the Software or a derivative work;
+* incorporating the Software into a commercial product;
+* offering the Software as a paid service;
+* operating a SaaS or hosted service based on the Software;
+* using the Software as part of a business operation;
+* licensing the Software to third parties;
+* creating a competing commercial product or service.
+
+The copyright holder may grant commercial licenses under separate terms.
+
+## 5. Derivative Works
+
+Modification of the source code for the purpose of study, review, experimentation, or proposing a contribution is permitted.
+
+However, no modified or derivative version may be used, distributed, published, or commercially exploited without prior written authorization from the copyright holder, except where such rights are independently granted by an applicable third-party license.
+
+## 6. Contributions
+
+Contributions to this project are welcome.
+
+By submitting a contribution, you confirm that you have the necessary rights to submit it.
+
+Unless otherwise agreed in writing, submission of a contribution does not transfer ownership of your copyright to the project owner.
+
+The project owner may accept, modify, reject, or incorporate contributions at their discretion.
+
+## 7. Third-Party Code
+
+This project may contain code, libraries, assets, or other components created by third parties.
+
+Third-party components remain subject to their original licenses.
+
+Nothing in this license restricts rights that are independently granted by an applicable third-party license.
+
+### MIT-Licensed Code
+
+This project is based in whole or in part on code originally distributed under the MIT License.
+
+Any code originating from the original MIT-licensed project remains subject to the MIT License.
+
+The MIT License grants rights that cannot be revoked or restricted by this license with respect to that original code.
+
+A copy of the applicable MIT License and the original copyright notices must be retained.
+
+This license applies only to original code and contributions for which the copyright holder has the necessary rights to impose these terms.
+
+## 8. Copyright and Attribution
+
+Copyright notices, license notices, and attribution requirements applicable to third-party code must not be removed.
+
+The name, logo, trademarks, and other branding of the project may not be used in a manner that falsely suggests endorsement, sponsorship, or official affiliation.
+
+## 9. No Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW.
+
+THE COPYRIGHT HOLDER DISCLAIMS ALL WARRANTIES INCLUDING, WITHOUT LIMITATION, WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+## 10. Limitation of Liability
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE COPYRIGHT HOLDER SHALL NOT BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM OR RELATED TO THE SOFTWARE OR ITS USE.
+
+## 11. Termination
+
+Any rights granted under this license automatically terminate if you violate its terms.
+
+Upon termination, you must cease all activities that are not otherwise authorized by this license or by an applicable third-party license.
+
+Termination does not affect rights granted independently under third-party licenses.
+
+## 12. Reservation of Rights
+
+All rights not expressly granted by this license are reserved by the copyright holder, subject to rights granted by applicable third-party licenses.
+
+## 13. Separate Commercial License
+
+The copyright holder may grant additional rights under a separate commercial or proprietary license.
+
+Such permission may be granted to specific individuals or organizations and does not automatically extend to any other person.
+
+## 14. Future Versions
+
+The copyright holder may release future versions of this license for future versions of the Software.
+
+Unless explicitly stated otherwise, each released version of the Software remains governed by the license accompanying that version.
+
+---
+
+**Copyright (c) 2026 Mallory BOUCHARD**
+
+**Source Available — Non-Commercial License**
+
+All rights reserved, except as expressly provided by this license and applicable third-party licenses.
