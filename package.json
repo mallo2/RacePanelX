@@ -47,7 +47,7 @@
     "@types/pngjs": "^6.0.5",
     "@types/react": "~19.2.2",
     "@vitest/coverage-v8": "^4.1.11",
-    "eslint": "^9.0.0",
+    "eslint": "^10.10.0",
     "eslint-config-expo": "~57.0.1",
     "jest": "^30.5.1",
     "jest-expo": "^57.0.5",
