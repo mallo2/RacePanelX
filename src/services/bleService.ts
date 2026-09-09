@@ -1,7 +1,7 @@
 import { PermissionsAndroid, Platform } from 'react-native';
 import { BleManager, Device, State } from 'react-native-ble-plx';
 import { BLE_CONFIG, PANEL_CONFIG } from '@/config/config';
-import { BleDevice } from '@/models/ble/bleDevice';
+import { BleDevice } from '@/types/ble/bleDevice';
 import { Command, CommandStatus, ErrorCode } from '@/services/commandService';
 import { bytesToBase64 } from '@/utils/base64';
 

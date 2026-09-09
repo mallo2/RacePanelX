@@ -1,4 +1,4 @@
-import { SettingsState } from "@/models/settings/state";
+import { SettingsState } from "@/types/settings/state";
 import { testCases } from "./settingsCombinations";
 import { evaluateTestCase } from "./evaluateTestCase";
 import { isBuggy } from "./isBuggy";

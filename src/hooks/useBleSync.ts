@@ -1,9 +1,9 @@
 import jtImageGenerator from "@/services/jtImageGenerator";
 import {useEffect, useRef} from "react";
-import {CarTelemetry} from "@/models/telemetry/carTelemetry";
-import {SettingsState} from "@/models/settings/state";
+import {CarTelemetry} from "@/types/telemetry/carTelemetry";
+import {SettingsState} from "@/types/settings/state";
 import {buildDisplayText} from "@/utils/displayTextBuilder";
-import {DisplayStyle} from "@/models/settings/displayStyle";
+import {DisplayStyle} from "@/types/settings/displayStyle";
 import bleService from "@/services/bleService";
 import { SetJTCommand, SetModeCommand } from "@/services/commandService";
 export function useBleDisplaySync(

@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import DeviceItem from '@/components/ble/DeviceItem';
-import { BleDevice } from '@/models/ble/bleDevice';
+import { BleDevice } from '@/types/ble/bleDevice';
 import { COLORS, SPACING } from '@/styles/theme';
 import { formatMessage, messages } from '@/i18n/messages';
 

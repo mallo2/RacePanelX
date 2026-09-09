@@ -17,7 +17,7 @@ export default defineConfig({
       include: [
         'src/config/**/*.ts',
         'src/i18n/messages.ts',
-        'src/models/**/*.ts',
+        'src/types/**/*.ts',
         'src/protocol/**/*.ts',
         'src/services/**/*.ts',
         'src/store/store.ts',

@@ -18,9 +18,9 @@ import {
   store,
   type RootState,
 } from '@/store/store';
-import { AdditionalDisplayMode } from '@/models/settings/additionalDisplayMode';
-import { DisplayStyle } from '@/models/settings/displayStyle';
-import { LapDisplayMode } from '@/models/settings/lapDisplayMode';
+import { AdditionalDisplayMode } from '@/types/settings/additionalDisplayMode';
+import { DisplayStyle } from '@/types/settings/displayStyle';
+import { LapDisplayMode } from '@/types/settings/lapDisplayMode';
 
 const initialState = (): RootState => store.getState();
 

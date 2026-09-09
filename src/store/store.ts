@@ -1,11 +1,11 @@
 import {configureStore, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {BleDevice} from "@/models/ble/bleDevice";
-import {BleState} from "@/models/ble/state";
-import {TelemetryState} from "@/models/telemetry/state";
-import {SettingsState} from "@/models/settings/state";
-import {DisplayStyle} from "@/models/settings/displayStyle";
-import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
-import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
+import {BleDevice} from "@/types/ble/bleDevice";
+import {BleState} from "@/types/ble/state";
+import {TelemetryState} from "@/types/telemetry/state";
+import {SettingsState} from "@/types/settings/state";
+import {DisplayStyle} from "@/types/settings/displayStyle";
+import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
+import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
 
 const initialState: BleState = {
   devices: [],

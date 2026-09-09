@@ -10,9 +10,9 @@ import {
   setLargeText,
   setManualDisplay
 } from '@/store/store';
-import {DisplayStyle} from "@/models/settings/displayStyle";
-import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
-import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
+import {DisplayStyle} from "@/types/settings/displayStyle";
+import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
+import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
 import {formatDisplayText, LAP_MODES_WITH_OPPONENT} from "@/utils/displayTextBuilder";
 
 export const useSettings = () => {

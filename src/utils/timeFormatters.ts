@@ -1,6 +1,6 @@
-import { GapData } from '@/models/telemetry/gapData';
-import { LapDisplayMode } from "@/models/settings/lapDisplayMode";
-import {CarTelemetry} from "@/models/telemetry/carTelemetry";
+import { GapData } from '@/types/telemetry/gapData';
+import { LapDisplayMode } from "@/types/settings/lapDisplayMode";
+import {CarTelemetry} from "@/types/telemetry/carTelemetry";
 
 export const formatGap = (gap: GapData | null, isPositive: boolean = true): string => {
   const sign = isPositive ? '+' : '-';

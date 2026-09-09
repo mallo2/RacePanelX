@@ -1,8 +1,8 @@
-import {CarTelemetry} from "@/models/telemetry/carTelemetry";
+import {CarTelemetry} from "@/types/telemetry/carTelemetry";
 import {getAdditionalDisplayModes} from "@/utils/displayTextBuilder";
-import {DisplayStyle} from "@/models/settings/displayStyle";
-import {SettingsState} from "@/models/settings/state";
-import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
+import {DisplayStyle} from "@/types/settings/displayStyle";
+import {SettingsState} from "@/types/settings/state";
+import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
 
 export const telemetryCases: Record<string, CarTelemetry> = {
     normal: {

@@ -1,5 +1,5 @@
-import {DisplayStyle} from "@/models/settings/displayStyle";
-import {SettingsState} from "@/models/settings/state";
+import {DisplayStyle} from "@/types/settings/displayStyle";
+import {SettingsState} from "@/types/settings/state";
 import {ImageAnalysis} from "./imageAnalysis";
 
 export const IMAGE_ANALYSIS_THRESHOLDS = {

@@ -1,4 +1,4 @@
-import {DisplayStyle} from "@/models/settings/displayStyle";
+import {DisplayStyle} from "@/types/settings/displayStyle";
 import { LapDisplayMode } from "./lapDisplayMode";
 import { AdditionalDisplayMode } from "./additionalDisplayMode";
 

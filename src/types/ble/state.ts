@@ -1,4 +1,4 @@
-import {BleDevice} from "@/models/ble/bleDevice";
+import {BleDevice} from "@/types/ble/bleDevice";
 
 export interface BleState {
     devices: BleDevice[];

@@ -1,9 +1,9 @@
-import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
-import {CarTelemetry} from "@/models/telemetry/carTelemetry";
-import {SettingsState} from "@/models/settings/state";
-import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
+import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
+import {CarTelemetry} from "@/types/telemetry/carTelemetry";
+import {SettingsState} from "@/types/settings/state";
+import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
 import {computeLapText} from "@/utils/timeFormatters";
-import {DisplayStyle} from "@/models/settings/displayStyle";
+import {DisplayStyle} from "@/types/settings/displayStyle";
 
 
 function computeOpponentNumberText(data: CarTelemetry, mode: LapDisplayMode): string | null {

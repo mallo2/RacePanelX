@@ -4,7 +4,7 @@ import { describe, expect, it, jest } from '@jest/globals';
 import { BleHeader } from '@/components/ble/BleHeader';
 import { BleDeviceList } from '@/components/ble/BleDeviceList';
 import DeviceItem from '@/components/ble/DeviceItem';
-import { BleDevice } from '@/models/ble/bleDevice';
+import { BleDevice } from '@/types/ble/bleDevice';
 
 const DEVICES: BleDevice[] = [
   { id: 'id-1', name: 'CoolLEDX 1', width: 96, height: 16 },

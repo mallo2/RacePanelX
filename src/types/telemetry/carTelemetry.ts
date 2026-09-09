@@ -1,4 +1,4 @@
-import { GapData } from "@/models/telemetry/gapData";
+import { GapData } from "@/types/telemetry/gapData";
 
 export interface CarTelemetry {
     position: number | null;

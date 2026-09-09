@@ -5,11 +5,11 @@ import {
   getAdditionalDisplayModes,
   LAP_MODES_WITH_OPPONENT,
 } from '@/utils/displayTextBuilder';
-import { DisplayStyle } from '@/models/settings/displayStyle';
-import { LapDisplayMode } from '@/models/settings/lapDisplayMode';
-import { AdditionalDisplayMode } from '@/models/settings/additionalDisplayMode';
-import type { SettingsState } from '@/models/settings/state';
-import type { CarTelemetry } from '@/models/telemetry/carTelemetry';
+import { DisplayStyle } from '@/types/settings/displayStyle';
+import { LapDisplayMode } from '@/types/settings/lapDisplayMode';
+import { AdditionalDisplayMode } from '@/types/settings/additionalDisplayMode';
+import type { SettingsState } from '@/types/settings/state';
+import type { CarTelemetry } from '@/types/telemetry/carTelemetry';
 
 const makeSettings = (overrides: Partial<SettingsState> = {}): SettingsState => ({
   carNumber: '12',

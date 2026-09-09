@@ -5,7 +5,7 @@ import {
   SetJTCommand,
   SetModeCommand,
 } from '@/services/commandService';
-import { DisplayStyle } from '@/models/settings/displayStyle';
+import { DisplayStyle } from '@/types/settings/displayStyle';
 
 const ble = vi.hoisted(() => {
   const State = {

@@ -9,7 +9,7 @@ import {
   setError,
   RootState
 } from '@/store/store';
-import { BleDevice } from "@/models/ble/bleDevice";
+import { BleDevice } from "@/types/ble/bleDevice";
 import { router } from "expo-router";
 
 export const useBleScan = (onConnect?: (device: BleDevice) => void) => {

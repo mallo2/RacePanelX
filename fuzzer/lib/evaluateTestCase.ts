@@ -1,7 +1,7 @@
-import {CarTelemetry} from "@/models/telemetry/carTelemetry";
+import {CarTelemetry} from "@/types/telemetry/carTelemetry";
 import {buildDisplayText} from "@/utils/displayTextBuilder";
 import jtImageGenerator from "@/services/jtImageGenerator";
-import {SettingsState} from "@/models/settings/state";
+import {SettingsState} from "@/types/settings/state";
 import {analyzeImageData, ImageAnalysis} from "./imageAnalysis";
 import {IMAGE_ANALYSIS_THRESHOLDS} from "./isBuggy";
 

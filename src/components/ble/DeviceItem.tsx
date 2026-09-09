@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from '@/components/ui/GlassCard';
-import { BleDevice } from '@/models/ble/bleDevice';
+import { BleDevice } from '@/types/ble/bleDevice';
 import { COLORS, RADIUS, SPACING } from '@/styles/theme';
 import { messages } from '@/i18n/messages';
 

@@ -4,7 +4,7 @@ import TelemetryCard from '@/components/telemetry/TelemetryCard';
 import { formatGap } from '@/utils/timeFormatters';
 import { SPACING } from '@/styles/theme';
 import { formatMessage, messages } from '@/i18n/messages';
-import { GapData } from '@/models/telemetry/gapData';
+import { GapData } from '@/types/telemetry/gapData';
 
 interface GapsInfoProps {
   deltaToLeader: GapData | null;

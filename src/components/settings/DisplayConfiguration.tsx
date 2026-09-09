@@ -5,9 +5,9 @@ import {SettingsInput} from './SettingsInput';
 import {SettingsNumberInput} from './SettingsNumberInput';
 import {SettingsSegmentedControl} from './SettingsSegmentedControl';
 import {useSettings} from '@/hooks/useSettings';
-import {DisplayStyle} from "@/models/settings/displayStyle";
-import {LapDisplayMode} from "@/models/settings/lapDisplayMode";
-import {AdditionalDisplayMode} from "@/models/settings/additionalDisplayMode";
+import {DisplayStyle} from "@/types/settings/displayStyle";
+import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
+import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
 import {getAdditionalDisplayModes} from "@/utils/displayTextBuilder";
 import {formatMessage, messages} from '@/i18n/messages';
 

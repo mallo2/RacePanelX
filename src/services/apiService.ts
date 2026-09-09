@@ -1,4 +1,4 @@
-import {CarTelemetry} from '@/models/telemetry/carTelemetry';
+import {CarTelemetry} from '@/types/telemetry/carTelemetry';
 import sessionManager from '@/services/sessionManager';
 
 class ApiService {

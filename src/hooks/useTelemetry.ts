@@ -1,9 +1,9 @@
 import {RootState} from "@/store/store";
 import {useSelector} from "react-redux";
-import {SettingsState} from "@/models/settings/state";
+import {SettingsState} from "@/types/settings/state";
 import {useTelemetryPolling} from "@/hooks/useTelemetryPolling";
 import {useBleDisplaySync} from "@/hooks/useBleSync";
-import {CarTelemetry} from "@/models/telemetry/carTelemetry";
+import {CarTelemetry} from "@/types/telemetry/carTelemetry";
 
 export const useTelemetry = () => {
   const settings = useSelector((state: RootState) => state.settings) as unknown as SettingsState;

@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { buildDisplayText } from '@/utils/displayTextBuilder';
 import jtImageGenerator from '@/services/jtImageGenerator';
 import { SetJTCommand, SetModeCommand } from '@/services/commandService';
-import { DisplayStyle } from '@/models/settings/displayStyle';
+import { DisplayStyle } from '@/types/settings/displayStyle';
 import { PANEL_CONFIG } from '@/config/config';
 import { testCases, telemetryCases } from '../../../fuzzer/lib/settingsCombinations';
 import { decodeChunkedFrames } from '../../helpers/protocol';

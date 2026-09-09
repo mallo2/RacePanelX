@@ -4,9 +4,9 @@ import crypto from "node:crypto";
 import { collectBugsWithImages, BugWithImage } from "../lib/collectBugsWithImages";
 import { renderGraffitiDataToPngBuffer } from "../../tools/jt-preview/jtRenderer";
 import { PANEL_CONFIG } from "@/config/config";
-import { LapDisplayMode } from "@/models/settings/lapDisplayMode";
-import { DisplayStyle } from "@/models/settings/displayStyle";
-import { AdditionalDisplayMode } from "@/models/settings/additionalDisplayMode";
+import { LapDisplayMode } from "@/types/settings/lapDisplayMode";
+import { DisplayStyle } from "@/types/settings/displayStyle";
+import { AdditionalDisplayMode } from "@/types/settings/additionalDisplayMode";
 
 const OUTPUT_DIR = path.resolve(process.cwd(), "generated-jt", "report");
 const IMAGES_DIR = path.join(OUTPUT_DIR, "images");

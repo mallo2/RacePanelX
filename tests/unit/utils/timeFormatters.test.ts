@@ -4,9 +4,9 @@ import {
   formatGap,
   formatTime,
 } from '@/utils/timeFormatters';
-import { LapDisplayMode } from '@/models/settings/lapDisplayMode';
-import type { CarTelemetry } from '@/models/telemetry/carTelemetry';
-import type { GapData } from '@/models/telemetry/gapData';
+import { LapDisplayMode } from '@/types/settings/lapDisplayMode';
+import type { CarTelemetry } from '@/types/telemetry/carTelemetry';
+import type { GapData } from '@/types/telemetry/gapData';
 
 describe('timeFormatters - formatTime', () => {
   it('formats typical times as minutes:seconds:centiseconds', () => {

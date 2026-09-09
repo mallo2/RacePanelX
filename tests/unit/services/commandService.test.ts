@@ -6,7 +6,7 @@ import {
   SetJTCommand,
   SetModeCommand,
 } from '@/services/commandService';
-import { DisplayStyle } from '@/models/settings/displayStyle';
+import { DisplayStyle } from '@/types/settings/displayStyle';
 import { OPCODE_IMAGE, OPCODE_MODE } from '@/protocol/coolledx';
 import {
   createRandomBytes,
