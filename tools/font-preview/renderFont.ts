@@ -60,7 +60,7 @@ function drawCellBorder(
 export function renderFont(font: JTFont): Buffer {
     const chars = getOrderedChars(font);
     if (chars.length === 0) {
-        throw new Error("La font ne contient aucun glyphe.");
+        throw new Error("This font does not contain a glyph");
     }
 
     const glyphHeight = Math.max(...chars.map((char) => font.glyphs[char].length));

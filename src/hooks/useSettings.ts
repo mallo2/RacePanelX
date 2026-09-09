@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   RootState,
@@ -19,10 +19,12 @@ export const useSettings = () => {
   const dispatch = useDispatch();
   const settings = useSelector((state: RootState) => state.settings);
   const [localText, setLocalText] = useState(settings.displayText);
+  const [lastSyncedText, setLastSyncedText] = useState(settings.displayText);
 
-  useEffect(() => {
+  if (lastSyncedText !== settings.displayText) {
+    setLastSyncedText(settings.displayText);
     setLocalText(settings.displayText);
-  }, [settings.displayText]);
+  }
 
   const handleChangeText = useCallback((value: string) => {
     setLocalText(formatDisplayText(value, settings.displayStyle, settings.largeText));
@@ -50,7 +52,7 @@ export const useSettings = () => {
   }, [dispatch]);
 
   const updateLapDisplayMode = useCallback((value: LapDisplayMode) => {
-    if (!(value in LAP_MODES_WITH_OPPONENT)) {
+    if (!LAP_MODES_WITH_OPPONENT.has(value)) {
       dispatch(setAdditionalDisplayMode(AdditionalDisplayMode.number));
     }
     dispatch(setLapDisplayMode(value));

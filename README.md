@@ -54,6 +54,9 @@ Pour plus de détails, consultez **[SETUP.md](./SETUP.md)**
 
 ## 🏗️ Architecture
 
+> 🧪 Une batterie complète de tests (unitaires, cas limites, régression) est
+> documentée dans **[TESTING.md](./TESTING.md)** — lancez-la avec `npm test`.
+
 ### Services (Business Logic)
 
 **BLE & Protocole**

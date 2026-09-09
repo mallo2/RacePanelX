@@ -1,0 +1,33 @@
+export default {
+  testRunner: 'vitest',
+  mutate: [
+    'src/protocol/*.ts',
+    'src/services/*.ts',
+    'src/services/fonts/*.ts',
+    'src/store/store.ts',
+    'src/utils/*.ts',
+  ],
+  vitest: {
+    configFile: 'vitest.config.mts',
+    related: false,
+  },
+  ignorePatterns: [
+    'node_modules',
+    'ios',
+    'android',
+    '.git',
+    '.expo',
+    '.stryker-tmp',
+    'coverage',
+    'generated-jt',
+    'fuzzer',
+    'tools',
+    'assets',
+  ],
+  concurrency: 4,
+  timeoutMS: 30000,
+  tempDirName: '.stryker-tmp',
+  coverageAnalysis: 'perTest',
+  reporters: ['clear-text', 'progress', 'html'],
+  thresholds: { high: 92, low: 75, break: 90 },
+};

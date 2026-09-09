@@ -1,12 +1,6 @@
 import { TextStyle, ViewStyle } from 'react-native';
 
-/**
- * RacePanelX "liquid glass" design system.
- * Palette derived from the RacePanelX logo: radiant cyan -> electric blue,
- * rendered over a deep space-navy background with frosted translucent surfaces.
- */
 export const COLORS = {
-  // Brand gradient stops (from assets/images/racepanelx-logo.svg)
   cyan: '#19E8F5',
   cyanBright: '#2CE8FF',
   azure: '#08BFEF',
@@ -14,12 +8,10 @@ export const COLORS = {
   blueBright: '#3D7BFF',
   primary: '#2CE8FF',
 
-  // Base
   background: '#050819',
   backgroundDeep: '#04061A',
   backgroundRaised: '#0A1030',
 
-  // Glass surfaces
   surface: 'rgba(255,255,255,0.07)',
   surfaceStrong: 'rgba(255,255,255,0.12)',
   surfaceWeak: 'rgba(255,255,255,0.045)',
@@ -29,13 +21,11 @@ export const COLORS = {
   borderStrong: 'rgba(255,255,255,0.26)',
   highlight: 'rgba(255,255,255,0.45)',
 
-  // Text
   text: '#FFFFFF',
   textSecondary: 'rgba(255,255,255,0.72)',
   textHint: 'rgba(255,255,255,0.45)',
   inactive: 'rgba(255,255,255,0.32)',
 
-  // States
   waiting: 'rgba(255,214,10,0.16)',
   waitingBorder: 'rgba(255,214,10,0.45)',
   waitingText: '#FFD60A',
@@ -65,11 +55,6 @@ export const RADIUS = {
   lg: 24,
   xl: 32,
   pill: 999,
-};
-
-export const FONT = {
-  mono: 'monospace',
-  display: 'System',
 };
 
 export const TYPOGRAPHY: Record<string, TextStyle> = {
@@ -122,22 +107,4 @@ export const SHADOWS = {
     shadowRadius: 18,
     elevation: 8,
   } as ViewStyle,
-};
-
-export const COMMON_STYLES: Record<string, ViewStyle> = {
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  formGroup: {
-    marginBottom: SPACING.md,
-  },
-  card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: SPACING.lg,
-    marginBottom: SPACING.md,
-  },
 };

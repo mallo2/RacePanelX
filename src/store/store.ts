@@ -122,12 +122,14 @@ export const {
   setAdditionalDisplayMode
 } = settingsSlice.actions;
 
+export const rootReducer = {
+  ble: bleSlice.reducer,
+  telemetry: telemetrySlice.reducer,
+  settings: settingsSlice.reducer,
+};
+
 export const store = configureStore({
-  reducer: {
-    ble: bleSlice.reducer,
-    telemetry: telemetrySlice.reducer,
-    settings: settingsSlice.reducer,
-  },
+  reducer: rootReducer,
 });
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -24,7 +24,7 @@
     "pngjs": "^7.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "^0.86.2",
+    "react-native": "0.86.3",
     "react-native-ble-plx": "^3.5.1",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
@@ -35,16 +35,26 @@
     "react-native-screens": "~4.26.0",
     "react-native-web": "^0.21.2",
     "react-native-worklets": "0.10.1",
-    "react-redux": "^9.3.0",
-    "vitest": "^5.0.0"
+    "react-redux": "^9.3.0"
   },
   "devDependencies": {
+    "@react-native/jest-preset": "^0.86.3",
+    "@stryker-mutator/core": "^10.0.0",
+    "@stryker-mutator/vitest-runner": "^10.0.0",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^26.4.1",
     "@types/pngjs": "^6.0.5",
     "@types/react": "~19.2.2",
+    "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~57.0.1",
-    "typescript": "~6.0.3"
+    "jest": "^30.5.1",
+    "jest-expo": "^57.0.5",
+    "test-renderer": "^1.2.0",
+    "typescript": "~6.0.3",
+    "vite": "^7.3.6",
+    "vitest": "^4.1.11"
   },
   "scripts": {
     "start": "EXPO_ROUTER_APP_ROOT=src expo start",
@@ -52,7 +62,55 @@
     "android": "EXPO_ROUTER_APP_ROOT=src expo start --android",
     "ios": "EXPO_ROUTER_APP_ROOT=src expo start --ios",
     "web": "EXPO_ROUTER_APP_ROOT=src expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "test": "vitest run && jest --ci",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
+    "test:ui": "jest --ci",
+    "test:coverage": "npm run test:coverage:unit && npm run test:coverage:ui",
+    "test:mutation": "stryker run",
+    "test:coverage:unit": "vitest run --coverage",
+    "test:coverage:ui": "jest --ci --coverage",
+    "test:e2e": "maestro test .e2e"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "<rootDir>/tests/ui/**/*.test.{ts,tsx}"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/ui/jest.setup.ts"
+    ],
+    "moduleNameMapper": {
+      "^@/assets/(.*)$": "<rootDir>/assets/$1",
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "collectCoverageFrom": [
+      "src/components/**/*.{ts,tsx}",
+      "src/hooks/**/*.{ts,tsx}",
+      "src/screens/**/*.{ts,tsx}",
+      "src/store/hooks.ts",
+      "src/styles/**/*.{ts,tsx}"
+    ],
+    "coverageDirectory": "<rootDir>/coverage/ui",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
+      }
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base|standard-navigation|react-redux|@reduxjs/toolkit|redux|redux-thunk|reselect|immer|symbol-observable|axios))",
+      "/node_modules/react-native-reanimated/plugin/",
+      "/node_modules/@react-native/babel-preset/"
+    ]
   },
   "private": true
 }

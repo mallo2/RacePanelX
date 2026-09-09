@@ -184,13 +184,10 @@ function resolveLanguageCode(): string {
 
 const languageCode = resolveLanguageCode().toLowerCase().replace('_', '-').split('-')[0];
 
-/** True when the device language is French, otherwise English is used as default. */
 export const isFrench = languageCode === 'fr';
 
-/** Messages for the device language (defaults to English). */
 export const messages: Messages = isFrench ? fr : en;
 
-/** Replaces `{key}` placeholders in a translated template. */
 export function formatMessage(
   template: string,
   values?: Record<string, string | number>,
