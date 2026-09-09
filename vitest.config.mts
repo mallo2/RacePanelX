@@ -12,6 +12,12 @@ export default defineConfig({
     include: ['tests/**/*.test.ts'],
     clearMocks: true,
     restoreMocks: true,
+    reporters: [
+      'default',
+      ['vitest-sonar-reporter', {
+        outputFile: 'coverage/sonar-report.xml',
+      }],
+    ],
     coverage: {
       provider: 'v8',
       include: [
