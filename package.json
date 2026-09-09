@@ -52,6 +52,7 @@
     "jest": "^30.5.1",
     "jest-expo": "^57.0.5",
     "test-renderer": "^1.2.0",
+    "tsx": "^4.23.13",
     "typescript": "~6.0.3",
     "vite": "^7.3.6",
     "vitest": "^4.1.11"
@@ -69,6 +70,8 @@
     "test:ui": "jest --ci",
     "test:coverage": "npm run test:coverage:unit && npm run test:coverage:ui",
     "test:mutation": "stryker run",
+    "fuzzer": "tsx fuzzer/scripts/run.ts",
+    "fuzzer:report": "tsx fuzzer/scripts/report.ts",
     "test:coverage:unit": "vitest run --coverage",
     "test:coverage:ui": "jest --ci --coverage",
     "test:e2e": "maestro test .e2e"
