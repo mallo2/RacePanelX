@@ -6,10 +6,8 @@ import {buildDisplayText} from "@/utils/displayTextBuilder";
 import {DisplayStyle} from "@/types/settings/displayStyle";
 import bleService from "@/services/bleService";
 import { SetJTCommand, SetModeCommand } from "@/services/commandService";
-export function useBleDisplaySync(
-    telemetryData: CarTelemetry | null,
-    settings: SettingsState
-) {
+
+export function useBleDisplaySync(telemetryData: CarTelemetry | null, settings: SettingsState) {
     const lastSentRef = useRef<{ text: string; style: DisplayStyle; manual: boolean } | null>(null);
     const inFlightRef = useRef(false);
     const pendingRef = useRef(false);
@@ -66,12 +64,6 @@ export function useBleDisplaySync(
         send();
     }, [
         telemetryData,
-        settings.manualDisplay,
-        settings.displayText,
-        settings.displayStyle,
-        settings.largeText,
-        settings.lapDisplayMode,
-        settings.additionalDisplayMode,
-        settings.carNumber,
+        settings
     ]);
 }
