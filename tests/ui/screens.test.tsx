@@ -81,6 +81,7 @@ function createStore(overrides?: {
     preloadedState: {
       ble: {
         devices: [],
+        connectingDevice: null,
         connectedDevice: null,
         isScanning: false,
         isConnected: false,

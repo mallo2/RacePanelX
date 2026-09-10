@@ -5,6 +5,9 @@ import { formatGap } from '@/utils/timeFormatters';
 import { SPACING } from '@/styles/theme';
 import { formatMessage, messages } from '@/i18n/messages';
 import { GapData } from '@/types/telemetry/gapData';
+import { useSettings } from '@/hooks/useSettings';
+import { LapDisplayMode } from '@/types/settings/lapDisplayMode';
+import { AdditionalDisplayMode } from '@/types/settings/additionalDisplayMode';
 
 interface GapsInfoProps {
   deltaToLeader: GapData | null;
@@ -16,6 +19,12 @@ export const GapsInfo: React.FC<GapsInfoProps> = ({ deltaToLeader, gapAhead, gap
   const formattedDeltaPole = useMemo(() => formatGap(deltaToLeader), [deltaToLeader]);
   const formattedGapAhead = useMemo(() => formatGap(gapAhead), [gapAhead]);
   const formattedGapBehind = useMemo(() => formatGap(gapBehind, false), [gapBehind]);
+  const { updateLapDisplayMode, updateAdditionalDisplayMode } = useSettings();
+
+  const handleLongPress = (mode: LapDisplayMode) => {
+    updateLapDisplayMode(mode);
+    updateAdditionalDisplayMode(AdditionalDisplayMode.opponent_number);
+  };
 
   return (
     <View>
@@ -23,6 +32,8 @@ export const GapsInfo: React.FC<GapsInfoProps> = ({ deltaToLeader, gapAhead, gap
         label={formatMessage(messages.telemetry.deltaPole, { car: deltaToLeader?.carNumber ?? '-' })}
         value={formattedDeltaPole}
         isLarge
+        onPress={() => updateLapDisplayMode(LapDisplayMode.delta)}
+        onLongPress={() => handleLongPress(LapDisplayMode.delta)}
       />
 
       <View style={styles.row}>
@@ -30,11 +41,15 @@ export const GapsInfo: React.FC<GapsInfoProps> = ({ deltaToLeader, gapAhead, gap
           label={formatMessage(messages.telemetry.gapAhead, { car: gapAhead?.carNumber ?? '-' })}
           value={formattedGapAhead}
           style={styles.halfCard}
+          onPress={() => updateLapDisplayMode(LapDisplayMode.front)}
+          onLongPress={() => handleLongPress(LapDisplayMode.front)}
         />
         <TelemetryCard
           label={formatMessage(messages.telemetry.gapBehind, { car: gapBehind?.carNumber ?? '-' })}
           value={formattedGapBehind}
           style={styles.halfCard}
+          onPress={() => updateLapDisplayMode(LapDisplayMode.back)}
+          onLongPress={() => handleLongPress(LapDisplayMode.back)}
         />
       </View>
       <View style={styles.spacer} />

@@ -91,6 +91,7 @@ function createStore(settings: Partial<RootState['settings']> = {}) {
     preloadedState: {
       ble: {
         devices: [],
+        connectingDevice: null,
         connectedDevice: null,
         isScanning: false,
         isConnected: false,

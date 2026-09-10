@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StyleProp, StyleSheet, Text, ViewStyle } from 'react-native';
+import { Platform, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientText } from '@/components/ui/GradientText';
 import { COLORS, RADIUS, SPACING } from '@/styles/theme';
@@ -9,6 +9,8 @@ interface TelemetryCardProps {
   value: string | number | null;
   isLarge?: boolean;
   style?: StyleProp<ViewStyle>;
+  onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 const MONO = Platform.select({
@@ -17,11 +19,18 @@ const MONO = Platform.select({
   default: 'monospace',
 });
 
-const TelemetryCard: React.FC<TelemetryCardProps> = ({ label, value, isLarge = false, style }) => {
+const TelemetryCard: React.FC<TelemetryCardProps> = ({
+  label,
+  value,
+  isLarge = false,
+  style,
+  onPress,
+  onLongPress,
+}) => {
   const displayValue = value ?? '--';
 
-  return (
-    <GlassCard style={[styles.card, style]} radius={RADIUS.md} contentStyle={styles.content}>
+  const cardContent = (
+    <>
       <Text style={styles.label}>{label}</Text>
       {isLarge ? (
         <GradientText
@@ -36,6 +45,27 @@ const TelemetryCard: React.FC<TelemetryCardProps> = ({ label, value, isLarge = f
           {displayValue}
         </Text>
       )}
+    </>
+  );
+
+  if (onPress || onLongPress) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        onLongPress={onLongPress}
+        activeOpacity={0.75}
+        style={[styles.card, style]}
+      >
+        <GlassCard style={styles.innerCard} radius={RADIUS.md} contentStyle={styles.content}>
+          {cardContent}
+        </GlassCard>
+      </TouchableOpacity>
+    );
+  }
+
+  return (
+    <GlassCard style={[styles.card, style]} radius={RADIUS.md} contentStyle={styles.content}>
+      {cardContent}
     </GlassCard>
   );
 };
@@ -43,6 +73,9 @@ const TelemetryCard: React.FC<TelemetryCardProps> = ({ label, value, isLarge = f
 const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.ms,
+  },
+  innerCard: {
+    flex: 1,
   },
   content: {
     padding: SPACING.md,
