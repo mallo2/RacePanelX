@@ -54,9 +54,9 @@ export function renderGraffitiDataToPngBuffer(
 
     if (graffitiData.length < expectedLength) {
         throw new Error(
-            `graffitiData invalide : ` +
-            `${graffitiData.length} octets reçus, ` +
-            `${expectedLength} attendus.`,
+            `graffitiData invalid : ` +
+            `${graffitiData.length} bytes received, ` +
+            `${expectedLength} expected.`,
         );
     }
 
