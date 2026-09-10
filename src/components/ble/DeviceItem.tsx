@@ -8,24 +8,37 @@ import { messages } from '@/i18n/messages';
 
 interface DeviceItemProps {
   item: BleDevice;
+  isConnecting?: boolean;
   isConnected: boolean;
   onPress?: (device: BleDevice) => void;
   disabled?: boolean;
 }
 
-const DeviceItem: React.FC<DeviceItemProps> = ({ item, onPress, isConnected, disabled }) => {
+const icon = (isConnecting: boolean | undefined, isConnected: boolean | undefined) => {
+    if (isConnecting) return 'bluetooth-audio';
+    if (isConnected) return 'bluetooth-connect';
+    return 'bluetooth';
+}
+
+const color = (isConnecting: boolean | undefined, isConnected: boolean | undefined) => {
+  if (isConnecting) return COLORS.waitingText;
+  if (isConnected) return COLORS.success;
+  return COLORS.textHint;
+}
+
+const DeviceItem: React.FC<DeviceItemProps> = ({ item, onPress, isConnecting, isConnected, disabled }) => {
   const content = (
     <GlassCard
       radius={RADIUS.md}
       emphasized={isConnected}
-      style={[styles.card, isConnected && styles.cardConnected]}
+      style={[styles.card, isConnecting && styles.cardConnecting, isConnected && styles.cardConnected]}
       contentStyle={styles.content}
     >
-      <View style={[styles.iconCircle, isConnected && styles.iconCircleConnected]}>
+      <View style={[styles.iconCircle, isConnecting && styles.iconCircleConnecting, isConnected && styles.iconCircleConnected]}>
         <MaterialCommunityIcons
-          name={isConnected ? 'bluetooth-connect' : 'bluetooth'}
+          name={icon(isConnecting, isConnected)}
           size={22}
-          color={isConnected ? COLORS.success : COLORS.textHint}
+          color={color(isConnecting, isConnected)}
         />
       </View>
 
@@ -34,6 +47,11 @@ const DeviceItem: React.FC<DeviceItemProps> = ({ item, onPress, isConnected, dis
           <Text style={styles.name} numberOfLines={1}>
             {item.name || messages.scan.unknownDevice}
           </Text>
+          {isConnecting && (
+              <View style={styles.connectingBadge}>
+                <Text style={styles.connectingBadgeText}>{messages.common.connecting}</Text>
+              </View>
+          )}
           {isConnected && (
             <View style={styles.connectedBadge}>
               <Text style={styles.connectedBadgeText}>{messages.common.connected}</Text>
@@ -68,8 +86,11 @@ const styles = StyleSheet.create({
   card: {
     marginBottom: SPACING.sm,
   },
+  cardConnecting: {
+    borderColor: COLORS.waitingText,
+  },
   cardConnected: {
-    borderColor: 'rgba(48,209,88,0.5)',
+    borderColor: COLORS.success,
   },
   content: {
     flexDirection: 'row',
@@ -80,16 +101,20 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: COLORS.inputBackground,
     borderWidth: 1,
     borderColor: COLORS.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: SPACING.ms,
   },
+  iconCircleConnecting: {
+    backgroundColor: COLORS.waiting,
+    borderColor: COLORS.waitingBorder,
+  },
   iconCircleConnected: {
-    backgroundColor: 'rgba(48,209,88,0.14)',
-    borderColor: 'rgba(48,209,88,0.45)',
+    backgroundColor: COLORS.successSurface,
+    borderColor: COLORS.successBorder,
   },
   info: {
     flex: 1,
@@ -110,6 +135,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 3,
   },
+  connectingBadge: {
+    backgroundColor: COLORS.waiting,
+    borderColor: COLORS.waitingBorder,
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
   connectedBadge: {
     backgroundColor: COLORS.successSurface,
     borderColor: COLORS.successBorder,
@@ -117,6 +150,13 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     paddingHorizontal: 8,
     paddingVertical: 2,
+  },
+  connectingBadgeText: {
+    color: COLORS.waitingText,
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
   },
   connectedBadgeText: {
     color: COLORS.success,

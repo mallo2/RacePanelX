@@ -7,14 +7,14 @@ import {
   setConnectedDevice,
   setIsScanning,
   setError,
-  RootState
+  RootState, setConnectingDevice
 } from '@/store/store';
 import { BleDevice } from "@/types/ble/bleDevice";
 import { router } from "expo-router";
 
 export const useBleScan = (onConnect?: (device: BleDevice) => void) => {
   const dispatch = useDispatch();
-  const { devices, isScanning, connectedDevice } = useSelector(
+  const { devices, isScanning, connectingDevice, connectedDevice } = useSelector(
     (state: RootState) => state.ble
   );
 
@@ -44,8 +44,10 @@ export const useBleScan = (onConnect?: (device: BleDevice) => void) => {
 
   const handleConnect = useCallback(async (device: BleDevice) => {
     try {
+      dispatch(setConnectingDevice(device));
       await bleService.connectToDevice(device.id);
       dispatch(setConnectedDevice(device));
+      dispatch(setConnectingDevice(null));
       if (onConnect) onConnect(device);
       router.push('/(tabs)');
     } catch (err) {
@@ -54,6 +56,7 @@ export const useBleScan = (onConnect?: (device: BleDevice) => void) => {
       Alert.alert('Connection Error', errorMessage);
     } finally {
       dispatch(setIsScanning(false));
+      dispatch(setConnectingDevice(null));
     }
   }, [dispatch, onConnect]);
 
@@ -65,6 +68,7 @@ export const useBleScan = (onConnect?: (device: BleDevice) => void) => {
   return {
     devices,
     isScanning,
+    connectingDevice,
     connectedDevice,
     handleScan,
     handleConnect,

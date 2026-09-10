@@ -7,6 +7,7 @@ import { formatMessage, messages } from '@/i18n/messages';
 
 interface BleDeviceListProps {
   devices: BleDevice[];
+  connectingDeviceId?: string;
   connectedDeviceId?: string;
   isScanning: boolean;
   onConnect: (device: BleDevice) => void;
@@ -15,17 +16,18 @@ interface BleDeviceListProps {
 
 
 export const BleDeviceList: React.FC<BleDeviceListProps> = React.memo(
-  function BleDeviceList({ devices, connectedDeviceId, isScanning, onConnect }) {
+  function BleDeviceList({ devices, connectingDeviceId, connectedDeviceId, isScanning, onConnect }) {
     const renderDevice = useCallback(
       ({ item }: { item: BleDevice }) => (
         <DeviceItem
           item={item}
           onPress={onConnect}
+          isConnecting={connectingDeviceId === item.id}
           isConnected={connectedDeviceId === item.id}
           disabled={isScanning}
         />
       ),
-      [onConnect, connectedDeviceId, isScanning],
+      [onConnect, connectingDeviceId, connectedDeviceId, isScanning],
     );
 
     let subtitle: string;

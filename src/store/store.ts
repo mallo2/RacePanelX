@@ -9,6 +9,7 @@ import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
 
 const initialState: BleState = {
   devices: [],
+  connectingDevice: null,
   connectedDevice: null,
   isScanning: false,
   isConnected: false,
@@ -21,6 +22,9 @@ const bleSlice = createSlice({
   reducers: {
     setDevices: (state, action: PayloadAction<BleDevice[]>) => {
       state.devices = action.payload;
+    },
+    setConnectingDevice: (state, action: PayloadAction<BleDevice | null>) => {
+      state.connectingDevice = action.payload;
     },
     setConnectedDevice: (state, action: PayloadAction<BleDevice | null>) => {
       state.connectedDevice = action.payload;
@@ -110,7 +114,7 @@ const settingsSlice = createSlice({
   },
 });
 
-export const { setDevices, setConnectedDevice, setIsScanning, setError, resetBleState } = bleSlice.actions;
+export const { setDevices, setConnectingDevice, setConnectedDevice, setIsScanning, setError, resetBleState } = bleSlice.actions;
 export const { setTelemetryData, setIsUpdating, setTelemetryError } = telemetrySlice.actions;
 export const {
   setCarNumber,

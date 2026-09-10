@@ -4,6 +4,7 @@ export const en = {
   common: {
     back: 'Back',
     refresh: 'Refresh',
+    connecting: 'Connecting',
     connected: 'Connected',
     disconnect: 'Disconnect',
   },
@@ -86,6 +87,7 @@ const fr: Messages = {
   common: {
     back: 'Retour',
     refresh: 'Actualiser',
+    connecting: 'Connexion…',
     connected: 'Connecté',
     disconnect: 'Déconnecter',
   },

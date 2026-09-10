@@ -72,6 +72,7 @@ describe('store - ble slice', () => {
   it('resets the slice to its initial state', () => {
     const pristine = {
       devices: [],
+      connectingDevice: null,
       connectedDevice: null,
       isScanning: false,
       isConnected: false,

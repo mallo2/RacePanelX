@@ -15,7 +15,7 @@ import { COLORS, RADIUS, SPACING } from '@/styles/theme';
 
 const DeviceScanScreen: React.FC = () => {
   const router = useRouter();
-  const { devices, isScanning, connectedDevice, handleScan, handleConnect, clearDevices } =
+  const { devices, isScanning, connectingDevice, connectedDevice, handleScan, handleConnect, clearDevices } =
     useBleScan();
 
   return (
@@ -45,6 +45,7 @@ const DeviceScanScreen: React.FC = () => {
             <ScanButton isScanning={isScanning} onPress={handleScan} />
             <BleDeviceList
               devices={devices}
+              connectingDeviceId={connectingDevice?.id}
               connectedDeviceId={connectedDevice?.id}
               isScanning={isScanning}
               onConnect={handleConnect}
