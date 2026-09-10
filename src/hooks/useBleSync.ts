@@ -11,8 +11,13 @@ export function useBleDisplaySync(telemetryData: CarTelemetry | null, settings: 
     const lastSentRef = useRef<{ text: string; style: DisplayStyle; manual: boolean } | null>(null);
     const inFlightRef = useRef(false);
     const pendingRef = useRef(false);
+    const latestTelemetryRef = useRef<CarTelemetry | null>(telemetryData);
+    const latestSettingsRef = useRef<SettingsState>(settings);
 
     useEffect(() => {
+        latestTelemetryRef.current = telemetryData;
+        latestSettingsRef.current = settings;
+
         if (!telemetryData) return;
 
         const textToSend = buildDisplayText(telemetryData, settings);
@@ -34,31 +39,52 @@ export function useBleDisplaySync(telemetryData: CarTelemetry | null, settings: 
             }
 
             inFlightRef.current = true;
-            do {
-                pendingRef.current = false;
+            try {
+                do {
+                    pendingRef.current = false;
 
-                const currentText = buildDisplayText(telemetryData, settings);
-                if (!currentText) { continue; }
+                    const currentTelemetry = latestTelemetryRef.current;
+                    const currentSettings = latestSettingsRef.current;
 
-                const currentMode = settings.manualDisplay ? settings.displayStyle : DisplayStyle.static;
+                    if (!currentTelemetry) { continue; }
 
-                const imageData = jtImageGenerator.generateJTImage(
-                    currentText,
-                    settings.largeText ? 'large' : 'small',
-                    'cyan'
-                );
+                    const currentText = buildDisplayText(currentTelemetry, currentSettings);
+                    if (!currentText) { continue; }
 
-                await bleService.sendCommand(new SetModeCommand(currentMode));
-                await bleService.sendCommand(new SetJTCommand(imageData));
+                    const currentMode = currentSettings.manualDisplay ? currentSettings.displayStyle : DisplayStyle.static;
+                    const currentLast = lastSentRef.current;
 
-                lastSentRef.current = {
-                    text: currentText,
-                    style: currentMode,
-                    manual: settings.manualDisplay,
-                };
-            } while (pendingRef.current);
+                    const shouldSend =
+                        currentLast?.text !== currentText ||
+                        currentLast.style !== currentMode ||
+                        currentLast.manual !== currentSettings.manualDisplay;
 
-            inFlightRef.current = false;
+                    if (!shouldSend) {
+                        continue;
+                    }
+
+                    const imageData = jtImageGenerator.generateJTImage(
+                        currentText,
+                        currentSettings.largeText ? 'large' : 'small',
+                        'cyan'
+                    );
+
+                    if (currentLast?.style !== currentMode) {
+                        await bleService.sendCommand(new SetModeCommand(currentMode));
+                    }
+                    await bleService.sendCommand(new SetJTCommand(imageData));
+
+                    lastSentRef.current = {
+                        text: currentText,
+                        style: currentMode,
+                        manual: currentSettings.manualDisplay,
+                    };
+                } while (pendingRef.current);
+            } catch (error) {
+                console.error('Failed to send BLE command:', error);
+            } finally {
+                inFlightRef.current = false;
+            }
         };
 
         send();

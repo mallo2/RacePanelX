@@ -10,7 +10,7 @@ import { DisplayStyle } from '@/types/settings/displayStyle';
 import { LapDisplayMode } from '@/types/settings/lapDisplayMode';
 import { CarTelemetry } from '@/types/telemetry/carTelemetry';
 import { BleDevice } from '@/types/ble/bleDevice';
-import { rootReducer, RootState } from '@/store/store';
+import { rootReducer, RootState, setIsUpdating, setTelemetryError } from '@/store/store';
 import { useBleDisplaySync } from '@/hooks/useBleSync';
 import { useBleScan } from '@/hooks/useBleScan';
 import { useSettings } from '@/hooks/useSettings';
@@ -324,6 +324,33 @@ describe('useTelemetry', () => {
     expect(result.current.isUpdating).toBe(false);
     expect(typeof result.current.refresh).toBe('function');
   });
+
+  it('does not resend BLE data when only isUpdating or error changes', async () => {
+    const store = createStore();
+    mockedApiService.retrieveData.mockResolvedValue(TELEMETRY);
+
+    await renderHook(() => useTelemetry(), { wrapper: wrapper(store) });
+    await flush();
+
+    expect(mockedBleService.sendCommand).toHaveBeenCalledTimes(3);
+
+    await act(async () => {
+      store.dispatch(setIsUpdating(true));
+    });
+    await flush();
+
+    await act(async () => {
+      store.dispatch(setTelemetryError('temporary error'));
+    });
+    await flush();
+
+    await act(async () => {
+      store.dispatch(setIsUpdating(false));
+    });
+    await flush();
+
+    expect(mockedBleService.sendCommand).toHaveBeenCalledTimes(3);
+  });
 });
 
 describe('useBleScan', () => {
@@ -529,7 +556,31 @@ describe('useBleDisplaySync', () => {
     await rerender({ telemetry: updated, settings: SETTINGS });
     await flush();
 
-    expect(mockedBleService.sendCommand.mock.calls).toHaveLength(4);
+    expect(mockedBleService.sendCommand.mock.calls).toHaveLength(3);
+  });
+
+  it('resends mode command when display style changes', async () => {
+    const { rerender } = await renderHook(
+      (props: { telemetry: CarTelemetry | null; settings: RootState['settings'] }) =>
+        useBleDisplaySync(props.telemetry, props.settings),
+      {
+        initialProps: {
+          telemetry: TELEMETRY,
+          settings: { ...SETTINGS, manualDisplay: true, displayStyle: DisplayStyle.static, displayText: 'HELLO' },
+        },
+      },
+    );
+    await flush();
+
+    expect(mockedBleService.sendCommand).toHaveBeenCalledTimes(2);
+
+    await rerender({
+      telemetry: TELEMETRY,
+      settings: { ...SETTINGS, manualDisplay: true, displayStyle: DisplayStyle.slide, displayText: 'HELLO' },
+    });
+    await flush();
+
+    expect(mockedBleService.sendCommand).toHaveBeenCalledTimes(4);
   });
 
   it('sends the manual text when manual display is enabled', async () => {
@@ -614,7 +665,26 @@ describe('useBleDisplaySync', () => {
     });
     await flush();
 
-    expect(mockedBleService.sendCommand.mock.calls).toHaveLength(4);
+    expect(mockedBleService.sendCommand.mock.calls).toHaveLength(3);
     mockedBleService.sendCommand.mockImplementation(() => Promise.resolve(undefined));
+  });
+
+  it('handles sendCommand failures without throwing uncaught errors and recovers on next update', async () => {
+    mockedBleService.sendCommand.mockRejectedValueOnce(new Error('ACK timeout after 1000ms on chunk 2'));
+
+    const { rerender } = await renderHook(
+      (props: { telemetry: CarTelemetry | null; settings: RootState['settings'] }) =>
+        useBleDisplaySync(props.telemetry, props.settings),
+      { initialProps: { telemetry: TELEMETRY, settings: SETTINGS } },
+    );
+    await flush();
+
+    expect(mockedBleService.sendCommand).toHaveBeenCalled();
+
+    const updated: CarTelemetry = { ...TELEMETRY, bestLapTime: 120_000 };
+    await rerender({ telemetry: updated, settings: SETTINGS });
+    await flush();
+
+    expect(mockedBleService.sendCommand).toHaveBeenCalledTimes(3);
   });
 });
