@@ -159,6 +159,49 @@ describe('apiService - data mapping', () => {
     });
   });
 
+  it('handles null ms in gap and interval fields', async () => {
+    const payload = {
+      cars: [
+        {
+          car_number: 1,
+          position: 1,
+          gaps: { toLeader: { ms: null, laps: 1 } },
+          ints: { toAhead: { ms: null } },
+        },
+        {
+          car_number: 12,
+          position: 2,
+          gaps: { toLeader: { ms: null, laps: 2 } },
+          ints: { toAhead: { ms: null, laps: 1 } },
+        },
+        {
+          car_number: 3,
+          position: 3,
+          ints: { toAhead: { ms: null, laps: null } },
+        },
+      ],
+    };
+    fetchMock.mockResolvedValue(jsonResponse(payload));
+
+    const data = await apiService.retrieveData(12, API_URL, UUID);
+
+    expect(data?.deltaToLeader).toEqual({
+      carNumber: '1',
+      ms: null,
+      laps: 2,
+    });
+    expect(data?.gapAhead).toEqual({
+      carNumber: '1',
+      ms: null,
+      laps: 1,
+    });
+    expect(data?.gapBehind).toEqual({
+      carNumber: '3',
+      ms: null,
+      laps: null,
+    });
+  });
+
   it('tolerates missing gap and interval sections', async () => {
     const payload = {
       cars: [

@@ -80,7 +80,7 @@ const settingsInitialState: SettingsState = {
   apiUrl: process.env.EXPO_PUBLIC_API_URL || '',
   uuid: process.env.EXPO_PUBLIC_UUID || '',
   manualDisplay: false,
-  color: "cyan",
+  color: Color.cyan,
   displayStyle: DisplayStyle.static,
   largeText: true,
   displayText: '',

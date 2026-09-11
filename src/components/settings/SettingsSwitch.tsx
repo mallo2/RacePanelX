@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Switch, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/styles/theme';
 
 interface SettingsSwitchProps {
@@ -10,27 +10,33 @@ interface SettingsSwitchProps {
 }
 
 export const SettingsSwitch: React.FC<SettingsSwitchProps> = React.memo(function SettingsSwitch({
-  label,
-  hint,
-  value,
-  onValueChange,
-}) {
+                                                                                                  label,
+                                                                                                  hint,
+                                                                                                  value,
+                                                                                                  onValueChange
+                                                                                                }) {
   return (
-    <View style={styles.container}>
-      <View style={styles.row}>
-        <View style={styles.textContainer}>
-          <Text style={styles.label}>{label}</Text>
-          {!!hint && <Text style={styles.hint}>{hint}</Text>}
+      <Pressable
+          style={styles.container}
+          onPress={() => onValueChange(!value)}
+          accessibilityLabel={label}
+          accessibilityState={{ checked: value }}
+      >
+        <View style={styles.row}>
+          <View style={styles.textContainer}>
+            <Text style={styles.label}>{label}</Text>
+            {!!hint && <Text style={styles.hint}>{hint}</Text>}
+          </View>
+          <Switch
+              value={value}
+              onValueChange={onValueChange}
+              trackColor={{ true: COLORS.primary, false: 'rgba(255,255,255,0.22)' }}
+              thumbColor="#FFFFFF"
+              ios_backgroundColor="rgba(255,255,255,0.22)"
+              pointerEvents="none"
+          />
         </View>
-        <Switch
-          value={value}
-          onValueChange={onValueChange}
-          trackColor={{ true: COLORS.primary, false: 'rgba(255,255,255,0.22)' }}
-          thumbColor="#FFFFFF"
-          ios_backgroundColor="rgba(255,255,255,0.22)"
-        />
-      </View>
-    </View>
+      </Pressable>
   );
 });
 

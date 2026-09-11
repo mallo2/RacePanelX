@@ -1,0 +1,13 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+      clearState: true
+- assertVisible: "Settings"
+- tapOn: "Manual display"
+- scroll
+- assertVisible: "Static"
+- assertVisible: "Slide"
+- tapOn: "Slide"
+- assertVisible: "The text shown on the display.*"
+- tapOn: "Static"
+- assertVisible: ".*up to 8 characters"

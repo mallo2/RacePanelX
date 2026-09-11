@@ -4,6 +4,9 @@ import { BLE_CONFIG, PANEL_CONFIG } from '@/config/config';
 import { BleDevice } from '@/types/ble/bleDevice';
 import { Command, CommandStatus, ErrorCode } from '@/services/commandService';
 import { bytesToBase64 } from '@/utils/base64';
+import { MOCK_BLE_DEVICE, MOCK_DEVICE } from '@/services/mocks/bleService.mock';
+import { e2eConfig } from "@/config/e2eConfig";
+
 
 const {
   SERVICE_UUID,
@@ -107,6 +110,9 @@ class BleService {
   }
 
   async scanForDevices(): Promise<BleDevice[]> {
+    if (e2eConfig.bleMock) {
+      return [MOCK_DEVICE];
+    }
     const manager = getBleManager();
 
     try {
@@ -167,6 +173,11 @@ class BleService {
   }
 
   async connectToDevice(deviceId: string): Promise<void> {
+    if (e2eConfig.bleMock) {
+      this.device = MOCK_BLE_DEVICE;
+      this.isConnected = true;
+      return;
+    }
     let lastError: Error | null = null;
 
     for (let attempt = 0; attempt < CONNECTION_RETRIES; attempt++) {

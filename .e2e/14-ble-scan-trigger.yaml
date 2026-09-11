@@ -1,0 +1,17 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Settings"
+- tapOn: ".*Connect a device"
+- assertVisible: ".*Scan"
+- tapOn: ".*Scan"
+- assertVisible: "No devices found"
+- runFlow:
+    when:
+        visible: "No devices"
+    commands:
+        - tapOn: "OK"
+- assertVisible: "LED panel"
+- tapOn: "Back"
+- assertVisible: "Settings"

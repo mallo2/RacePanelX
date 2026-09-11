@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import jtImageGenerator from '@/services/jtImageGenerator';
 import { JT_FONTS } from '@/services/fonts/jtFonts';
 import { PANEL_CONFIG } from '@/config/config';
+import {Color} from "@/types/settings/color";
 
 const { WIDTH, HEIGHT } = PANEL_CONFIG;
 const BYTES_PER_PLANE = WIDTH * (HEIGHT / 8);
@@ -61,17 +62,17 @@ describe('jtImageGenerator - output format', () => {
 
   it('always produces 3 planes of 96x16/8 bytes (576 bytes)', () => {
     for (const size of ['small', 'large'] as const) {
-      const image = jtImageGenerator.generateJTImage('A', size, 'red');
+      const image = jtImageGenerator.generateJTImage('A', size, Color.red);
 
       expect(image).toHaveLength(3 * BYTES_PER_PLANE);
     }
   });
 
   it('maps each plane to one RGB channel', () => {
-    const red = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', 'red'));
-    const green = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', 'green'));
-    const blue = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', 'blue'));
-    const white = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', 'white'));
+    const red = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', Color.red));
+    const green = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', Color.green));
+    const blue = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', Color.blue));
+    const white = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', Color.white));
 
     expect(inPlane(red, 1)).toEqual([]);
     expect(inPlane(red, 2)).toEqual([]);
@@ -84,8 +85,8 @@ describe('jtImageGenerator - output format', () => {
   });
 
   it('supports every named color', () => {
-    for (const color of ['red', 'green', 'blue', 'magenta', 'yellow', 'cyan', 'white']) {
-      const image = jtImageGenerator.generateJTImage('R', 'small', color as never);
+    for (const color of [Color.red, Color.green, Color.blue, Color.magenta, Color.yellow, Color.cyan, Color.white]) {
+      const image = jtImageGenerator.generateJTImage('R', 'small', color);
       expect(image).toHaveLength(3 * BYTES_PER_PLANE);
       expect(decodeGraffiti(image).length).toBeGreaterThan(0);
     }
@@ -93,7 +94,7 @@ describe('jtImageGenerator - output format', () => {
 
   it('falls back to cyan for an unknown color', () => {
     const fallback = jtImageGenerator.generateJTImage('A', 'small', 'nope' as never);
-    const cyan = jtImageGenerator.generateJTImage('A', 'small', 'cyan');
+    const cyan = jtImageGenerator.generateJTImage('A', 'small', Color.cyan);
 
     expect(fallback).toEqual(cyan);
   });
@@ -101,7 +102,7 @@ describe('jtImageGenerator - output format', () => {
 
 describe('jtImageGenerator - text rendering', () => {
   it('centers a single character horizontally (small font)', () => {
-    const pixels = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', 'red'));
+    const pixels = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', Color.red));
     const box = boundingBox(pixels);
 
     expect(box.minRow).toBe(5);
@@ -111,13 +112,13 @@ describe('jtImageGenerator - text rendering', () => {
   });
 
   it('draws exactly the number of pixels of the A glyph (small font)', () => {
-    const pixels = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', 'red'));
+    const pixels = decodeGraffiti(jtImageGenerator.generateJTImage('A', 'small', Color.red));
 
     expect(pixels).toHaveLength(28);
   });
 
   it('applies the custom widths of the large font (colon)', () => {
-    const colon = decodeGraffiti(jtImageGenerator.generateJTImage(':', 'large', 'red'));
+    const colon = decodeGraffiti(jtImageGenerator.generateJTImage(':', 'large', Color.red));
     const box = boundingBox(colon);
 
     expect(box.minCol).toBeGreaterThanOrEqual(46);
@@ -130,7 +131,7 @@ describe('jtImageGenerator - text rendering', () => {
     for (const text of ['', ' ', '  ']) {
       for (const size of ['small', 'large'] as const) {
         const pixels = decodeGraffiti(
-          jtImageGenerator.generateJTImage(text, size, 'red'),
+          jtImageGenerator.generateJTImage(text, size, Color.red),
         );
         expect(pixels, `text '${text}' size ${size}`).toEqual([]);
       }
@@ -141,7 +142,7 @@ describe('jtImageGenerator - text rendering', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
     const pixels = decodeGraffiti(
-      jtImageGenerator.generateJTImage('§ABC', 'small', 'red'),
+      jtImageGenerator.generateJTImage('§ABC', 'small', Color.red),
     );
 
     expect(warnSpy).toHaveBeenCalled();
@@ -152,10 +153,10 @@ describe('jtImageGenerator - text rendering', () => {
   it('ignores unsupported characters when measuring the layout', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const plain = boundingBox(
-      decodeGraffiti(jtImageGenerator.generateJTImage('AB', 'small', 'red')),
+      decodeGraffiti(jtImageGenerator.generateJTImage('AB', 'small', Color.red)),
     );
     const mixed = boundingBox(
-      decodeGraffiti(jtImageGenerator.generateJTImage('§AB', 'small', 'red')),
+      decodeGraffiti(jtImageGenerator.generateJTImage('§AB', 'small', Color.red)),
     );
 
     expect(mixed.minCol).toBe(plain.minCol);
@@ -168,7 +169,7 @@ describe('jtImageGenerator - text rendering', () => {
     const text = 'A'.repeat(200);
 
     const pixels = decodeGraffiti(
-      jtImageGenerator.generateJTImage(text, 'large', 'cyan'),
+      jtImageGenerator.generateJTImage(text, 'large', Color.cyan),
     );
 
     expect(pixels.length).toBeGreaterThan(0);
@@ -188,7 +189,7 @@ describe('jtImageGenerator - text rendering', () => {
     for (const text of texts) {
       for (const size of ['small', 'large'] as const) {
         const pixels = decodeGraffiti(
-          jtImageGenerator.generateJTImage(text, size, 'white'),
+          jtImageGenerator.generateJTImage(text, size, Color.white),
         );
 
         for (const pixel of pixels) {
@@ -202,8 +203,8 @@ describe('jtImageGenerator - text rendering', () => {
   });
 
   it('renders large-font characters wider than small-font ones', () => {
-    const small = decodeGraffiti(jtImageGenerator.generateJTImage('M', 'small', 'red'));
-    const large = decodeGraffiti(jtImageGenerator.generateJTImage('M', 'large', 'red'));
+    const small = decodeGraffiti(jtImageGenerator.generateJTImage('M', 'small', Color.red));
+    const large = decodeGraffiti(jtImageGenerator.generateJTImage('M', 'large', Color.red));
 
     expect(boundingBox(small).maxCol - boundingBox(small).minCol).toBeLessThan(
       boundingBox(large).maxCol - boundingBox(large).minCol,
@@ -214,7 +215,7 @@ describe('jtImageGenerator - text rendering', () => {
     const glyph = JT_FONTS.small.glyphs.W;
     const bits = JT_FONTS.small.bits;
     const pixels = decodeGraffiti(
-      jtImageGenerator.generateJTImage('W'.repeat(14), 'small', 'red'),
+      jtImageGenerator.generateJTImage('W'.repeat(14), 'small', Color.red),
     );
     const atColumnZero = pixels.filter((pixel) => pixel.col === 0);
     const expected = glyph.filter((row) => (row >> (bits - 2)) & 1).length;
@@ -230,14 +231,14 @@ describe('jtImageGenerator - consistency with the fonts', () => {
 
     for (const size of ['small', 'large'] as const) {
       const sample = Object.keys(JT_FONTS[size].glyphs).join('');
-      jtImageGenerator.generateJTImage(sample, size, 'white');
+      jtImageGenerator.generateJTImage(sample, size, Color.white);
     }
 
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('measures widths consistently with the font metrics', () => {
-    const smallAB = decodeGraffiti(jtImageGenerator.generateJTImage('AB', 'small', 'red'));
+    const smallAB = decodeGraffiti(jtImageGenerator.generateJTImage('AB', 'small', Color.red));
     const font = JT_FONTS.small;
     const widthA = font.customWidths.A?.[1] ?? font.charWidth;
     const widthB = font.customWidths.B?.[1] ?? font.charWidth;

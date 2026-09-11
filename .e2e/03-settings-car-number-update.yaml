@@ -1,0 +1,12 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Settings"
+- tapOn: "123"
+- eraseText
+- inputText: "44"
+- assertVisible: "44"
+- tapOn: "Telemetry"
+- tapOn: "Settings"
+- assertVisible: "44"

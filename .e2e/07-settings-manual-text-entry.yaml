@@ -1,0 +1,11 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Settings"
+- tapOn: "Manual display"
+- scroll
+- assertVisible: "Display text"
+- tapOn: "Type your text"
+- inputText: "COOL"
+- assertVisible: "COOL"

@@ -13,13 +13,13 @@ import {formatMessage, messages} from '@/i18n/messages';
 import {Color} from "@/types/settings/color";
 
 const COLOR_OPTIONS: { label: string; value: Color }[] = [
-  { label: messages.settings.red, value: 'red' },
-  { label: messages.settings.green, value: 'green' },
-  { label: messages.settings.blue, value: 'blue' },
-  { label: messages.settings.magenta, value: 'magenta' },
-  { label: messages.settings.yellow, value: 'yellow' },
-  { label: messages.settings.cyan, value: 'cyan' },
-  { label: messages.settings.white, value: 'white' },
+  { label: messages.settings.red, value: Color.red },
+  { label: messages.settings.green, value: Color.green },
+  { label: messages.settings.blue, value: Color.blue },
+  { label: messages.settings.magenta, value: Color.magenta },
+  { label: messages.settings.yellow, value: Color.yellow },
+  { label: messages.settings.cyan, value: Color.cyan },
+  { label: messages.settings.white, value: Color.white },
 ];
 
 const STYLE_DISPLAY_OPTIONS: { label: string; value: DisplayStyle }[] = [

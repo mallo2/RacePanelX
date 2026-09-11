@@ -3,6 +3,7 @@ import {getAdditionalDisplayModes} from "@/utils/displayTextBuilder";
 import {DisplayStyle} from "@/types/settings/displayStyle";
 import {SettingsState} from "@/types/settings/state";
 import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
+import {Color} from "@/types/settings/color";
 
 export const telemetryCases: Record<string, CarTelemetry> = {
     normal: {
@@ -60,6 +61,10 @@ export const telemetryCases: Record<string, CarTelemetry> = {
     },
 };
 
+export const COLOR_VALUES = Object.values(Color).filter(
+    (v): v is Color => typeof v === "number",
+);
+
 export const LAP_DISPLAY_MODES = Object.values(LapDisplayMode).filter(
     (v): v is LapDisplayMode => typeof v === "number",
 );
@@ -86,6 +91,7 @@ export const DISPLAY_TEXTS = [
 export const CAR_NUMBERS = ["1", "11", "111"];
 
 export type SettingsCombination = {
+    color: Color;
     lapDisplayMode: LapDisplayMode;
     additionalDisplayMode: ReturnType<typeof getAdditionalDisplayModes>[number];
     displayStyle: DisplayStyle;
@@ -95,7 +101,7 @@ export type SettingsCombination = {
     carNumber: string;
 };
 
-type DisplayModeCombination = Pick<SettingsCombination, "largeText" | "manualDisplay" | "displayStyle">;
+type DisplayModeCombination = Pick<SettingsCombination, "color" | "largeText" | "manualDisplay" | "displayStyle">;
 type ContentCombination = Pick<SettingsCombination, "displayText" | "carNumber">;
 
 function isValidDisplayModeCombination(manualDisplay: boolean, displayStyle: DisplayStyle): boolean {
@@ -103,11 +109,13 @@ function isValidDisplayModeCombination(manualDisplay: boolean, displayStyle: Dis
 }
 
 function* displayModeCombinations(): Generator<DisplayModeCombination> {
-    for (const largeText of LARGE_TEXT_VALUES) {
-        for (const manualDisplay of MANUAL_DISPLAY_VALUES) {
-            for (const displayStyle of DISPLAY_STYLES) {
-                if (isValidDisplayModeCombination(manualDisplay, displayStyle)) {
-                    yield {largeText, manualDisplay, displayStyle};
+    for (const color of COLOR_VALUES) {
+        for (const largeText of LARGE_TEXT_VALUES) {
+            for (const manualDisplay of MANUAL_DISPLAY_VALUES) {
+                for (const displayStyle of DISPLAY_STYLES) {
+                    if (isValidDisplayModeCombination(manualDisplay, displayStyle)) {
+                        yield {color, largeText, manualDisplay, displayStyle};
+                    }
                 }
             }
         }

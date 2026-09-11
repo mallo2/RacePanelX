@@ -1,0 +1,15 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Settings"
+- assertVisible: "Lap display"
+- assertNotVisible: "Display style"
+- tapOn: "Manual display"
+- scroll
+- assertVisible: "Display style"
+- assertVisible: "Display text"
+- assertNotVisible: "Lap display"
+- tapOn: "Manual display"
+- assertVisible: "Lap display"
+- assertNotVisible: "Display style"
