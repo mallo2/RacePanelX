@@ -179,6 +179,21 @@ describe('SettingsSwitch', () => {
     expect(onValueChange).toHaveBeenCalledWith(true);
   });
 
+  it('toggles value when pressing the container', async () => {
+    const onValueChange = jest.fn();
+
+    await render(
+      <SettingsSwitch
+        label="Manual display"
+        value={false}
+        onValueChange={onValueChange}
+      />,
+    );
+
+    await fireEvent.press(screen.getByLabelText('Manual display'));
+    expect(onValueChange).toHaveBeenCalledWith(true);
+  });
+
   it('reflects the current switch value', async () => {
     const onValueChange = jest.fn();
 

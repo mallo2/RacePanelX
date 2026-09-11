@@ -6,6 +6,7 @@ import { act, renderHook } from '@testing-library/react-native';
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import * as expoRouter from 'expo-router';
 import { AdditionalDisplayMode } from '@/types/settings/additionalDisplayMode';
+import { Color } from '@/types/settings/color';
 import { DisplayStyle } from '@/types/settings/displayStyle';
 import { LapDisplayMode } from '@/types/settings/lapDisplayMode';
 import { CarTelemetry } from '@/types/telemetry/carTelemetry';
@@ -13,9 +14,12 @@ import { BleDevice } from '@/types/ble/bleDevice';
 import { rootReducer, RootState, setIsUpdating, setTelemetryError } from '@/store/store';
 import { useBleDisplaySync } from '@/hooks/useBleSync';
 import { useBleScan } from '@/hooks/useBleScan';
+import { useE2EConfig } from '@/hooks/useE2EConfig';
 import { useSettings } from '@/hooks/useSettings';
 import { useTelemetry } from '@/hooks/useTelemetry';
 import { useTelemetryPolling } from '@/hooks/useTelemetryPolling';
+import * as Linking from 'expo-linking';
+import { e2eConfig } from '@/config/e2eConfig';
 
 jest.mock('@/services/bleService', () => {
   const { jest: j } = require('@jest/globals');
@@ -43,6 +47,22 @@ jest.mock('@/services/apiService', () => {
   };
 });
 
+jest.mock('expo-linking', () => {
+  const { jest: j } = require('@jest/globals');
+
+  return {
+    __esModule: true,
+    getInitialURL: j.fn().mockResolvedValue(null),
+    parse: j.fn((url: string) => ({
+      hostname: '',
+      path: '',
+      queryParams: {},
+      scheme: '',
+    })),
+    addEventListener: j.fn(),
+  };
+});
+
 import bleService from '@/services/bleService';
 import apiService from '@/services/apiService';
 
@@ -56,6 +76,18 @@ const mockedBleService = bleService as unknown as {
 const mockedApiService = apiService as unknown as {
   retrieveData: jest.Mock<
     (carNumber: number, apiUrl: string, uuid: string) => Promise<CarTelemetry | null>
+  >;
+};
+const mockedLinking = Linking as unknown as {
+  getInitialURL: jest.Mock<() => Promise<string | null>>;
+  parse: jest.Mock<(url: string) => {
+    hostname: string;
+    path: string;
+    queryParams: Record<string, string | undefined>;
+    scheme: string;
+  }>;
+  addEventListener: jest.Mock<
+    (event: string, listener: (event: { url: string }) => void) => { remove: () => void }
   >;
 };
 
@@ -151,12 +183,14 @@ describe('useSettings', () => {
 
     await act(() => result.current.updateManualDisplay(true));
     await act(() => result.current.updateLargeText(false));
+    await act(() => result.current.updateColor(Color.red));
     await act(() => result.current.updateDisplayStyle(DisplayStyle.slide));
     await act(() => result.current.updateAdditionalDisplayMode(AdditionalDisplayMode.opponent_number));
     await act(() => result.current.updateLapDisplayMode(LapDisplayMode.back));
 
     expect(store.getState().settings.manualDisplay).toBe(true);
     expect(store.getState().settings.largeText).toBe(false);
+    expect(store.getState().settings.color).toBe(Color.red);
     expect(store.getState().settings.displayStyle).toBe(DisplayStyle.slide);
     expect(store.getState().settings.lapDisplayMode).toBe(LapDisplayMode.back);
     expect(store.getState().settings.additionalDisplayMode).toBe(AdditionalDisplayMode.opponent_number);
@@ -271,6 +305,25 @@ describe('useTelemetryPolling', () => {
     );
     await flush();
     await unmount();
+
+    expect(clearIntervalSpy).toHaveBeenCalled();
+    clearIntervalSpy.mockRestore();
+  });
+
+  it('clears existing interval if started when timer is already active', async () => {
+    const store = createStore();
+    mockedApiService.retrieveData.mockResolvedValue(TELEMETRY);
+    const clearIntervalSpy = jest.spyOn(globalThis, 'clearInterval');
+
+    const { rerender } = await renderHook(
+      (props: { interval: number }) =>
+        useTelemetryPolling('12', 'https://api.example.com', 'uuid-1', props.interval),
+      { wrapper: wrapper(store), initialProps: { interval: 5_000 } },
+    );
+    await flush();
+
+    await rerender({ interval: 10_000 });
+    await flush();
 
     expect(clearIntervalSpy).toHaveBeenCalled();
     clearIntervalSpy.mockRestore();
@@ -687,5 +740,131 @@ describe('useBleDisplaySync', () => {
     await flush();
 
     expect(mockedBleService.sendCommand).toHaveBeenCalledTimes(3);
+  });
+
+  it('skips resending in loop if latest state matches what was just sent', async () => {
+    const resolvers: (() => void)[] = [];
+    mockedBleService.sendCommand.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolvers.push(resolve);
+        }),
+    );
+
+    const { rerender } = await renderHook(
+      (props: { telemetry: CarTelemetry | null; settings: RootState['settings'] }) =>
+        useBleDisplaySync(props.telemetry, props.settings),
+      { initialProps: { telemetry: TELEMETRY, settings: SETTINGS } },
+    );
+
+    await act(async () => {});
+    expect(mockedBleService.sendCommand).toHaveBeenCalledTimes(1);
+
+    const updated: CarTelemetry = { ...TELEMETRY, bestLapTime: 111_111 };
+    await rerender({ telemetry: updated, settings: SETTINGS });
+
+    // Rerender back to original TELEMETRY while first send is still in flight
+    await rerender({ telemetry: TELEMETRY, settings: SETTINGS });
+
+    await act(async () => {
+      for (let round = 0; round < 6 && resolvers.length > 0; round += 1) {
+        resolvers.splice(0).forEach((resolve) => resolve());
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+    });
+    await flush();
+
+    // Only the initial 2 commands were sent
+    expect(mockedBleService.sendCommand).toHaveBeenCalledTimes(2);
+    mockedBleService.sendCommand.mockImplementation(() => Promise.resolve(undefined));
+  });
+});
+
+describe('useE2EConfig', () => {
+  let removeMock: jest.Mock<() => void>;
+  let urlListener: ((event: { url: string }) => void) | null;
+
+  beforeEach(() => {
+    e2eConfig.bleMock = false;
+    removeMock = jest.fn();
+    urlListener = null;
+
+    mockedLinking.addEventListener.mockImplementation((event: string, listener: any) => {
+      if (event === 'url') {
+        urlListener = listener;
+      }
+      return { remove: removeMock };
+    });
+  });
+
+  afterEach(() => {
+    mockedLinking.getInitialURL.mockReset();
+    mockedLinking.parse.mockReset();
+    mockedLinking.addEventListener.mockReset();
+  });
+
+  it('handles initial URL with e2e path and bleMock=true', async () => {
+    mockedLinking.getInitialURL.mockResolvedValue('racepanel://e2e?bleMock=true');
+    mockedLinking.parse.mockReturnValue({
+      hostname: '',
+      path: 'e2e',
+      queryParams: { bleMock: 'true' },
+      scheme: 'racepanel',
+    });
+
+    await renderHook(() => useE2EConfig());
+    await flush();
+
+    expect(e2eConfig.bleMock).toBe(true);
+  });
+
+  it('ignores initial URL with non-e2e path', async () => {
+    mockedLinking.getInitialURL.mockResolvedValue('racepanel://settings');
+    mockedLinking.parse.mockReturnValue({
+      hostname: '',
+      path: 'settings',
+      queryParams: {},
+      scheme: 'racepanel',
+    });
+
+    await renderHook(() => useE2EConfig());
+    await flush();
+
+    expect(e2eConfig.bleMock).toBe(false);
+  });
+
+  it('handles null initial URL', async () => {
+    mockedLinking.getInitialURL.mockResolvedValue(null);
+
+    await renderHook(() => useE2EConfig());
+    await flush();
+
+    expect(e2eConfig.bleMock).toBe(false);
+  });
+
+  it('handles URL events and sets bleMock', async () => {
+    mockedLinking.getInitialURL.mockResolvedValue(null);
+    mockedLinking.parse.mockImplementation((url: string) => {
+      if (url.includes('bleMock=true')) {
+        return { hostname: '', path: 'e2e', queryParams: { bleMock: 'true' }, scheme: 'racepanel' };
+      }
+      return { hostname: '', path: 'other', queryParams: {}, scheme: 'racepanel' };
+    });
+
+    const { unmount } = await renderHook(() => useE2EConfig());
+    await flush();
+
+    await act(async () => {
+      urlListener?.({ url: 'racepanel://other' });
+    });
+    expect(e2eConfig.bleMock).toBe(false);
+
+    await act(async () => {
+      urlListener?.({ url: 'racepanel://e2e?bleMock=true' });
+    });
+    expect(e2eConfig.bleMock).toBe(true);
+
+    await unmount();
+    expect(removeMock).toHaveBeenCalledTimes(1);
   });
 });

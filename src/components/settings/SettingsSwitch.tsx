@@ -7,24 +7,20 @@ interface SettingsSwitchProps {
   hint?: string;
   value: boolean;
   onValueChange: (value: boolean) => void;
-  testID?: string;
 }
 
 export const SettingsSwitch: React.FC<SettingsSwitchProps> = React.memo(function SettingsSwitch({
                                                                                                   label,
                                                                                                   hint,
                                                                                                   value,
-                                                                                                  onValueChange,
-                                                                                                  testID,
+                                                                                                  onValueChange
                                                                                                 }) {
   return (
       <Pressable
           style={styles.container}
           onPress={() => onValueChange(!value)}
-          accessibilityRole="switch"
           accessibilityLabel={label}
           accessibilityState={{ checked: value }}
-          testID={testID}
       >
         <View style={styles.row}>
           <View style={styles.textContainer}>

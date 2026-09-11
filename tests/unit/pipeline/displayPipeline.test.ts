@@ -6,6 +6,7 @@ import { DisplayStyle } from '@/types/settings/displayStyle';
 import { PANEL_CONFIG } from '@/config/config';
 import { testCases, telemetryCases } from '../../../fuzzer/lib/settingsCombinations';
 import { decodeChunkedFrames } from '../../helpers/protocol';
+import {Color} from "@/types/settings/color";
 
 const { WIDTH, HEIGHT } = PANEL_CONFIG;
 const IMAGE_BYTES = 3 * WIDTH * (HEIGHT / 8);
@@ -37,7 +38,7 @@ describe('display pipeline - full fuzzer matrix', () => {
     for (const { telemetryData, settings } of testCases()) {
       const text = buildDisplayText(telemetryData, settings);
       const size = settings.largeText ? 'large' : 'small';
-      const image = jtImageGenerator.generateJTImage(text, size, 'cyan');
+      const image = jtImageGenerator.generateJTImage(text, size, Color.cyan);
 
       expect(image).toHaveLength(IMAGE_BYTES);
 
@@ -71,7 +72,7 @@ describe('display pipeline - full fuzzer matrix', () => {
       jtImageGenerator.generateJTImage(
         text,
         settings.largeText ? 'large' : 'small',
-        'white',
+        Color.white,
       );
     }
 
@@ -104,6 +105,7 @@ describe('display pipeline - ad hoc edge cases', () => {
     displayStyle: DisplayStyle.static,
     largeText: true,
     displayText: '',
+    color: Color.cyan,
     lapDisplayMode: 0,
     additionalDisplayMode: 1,
   });
@@ -133,7 +135,7 @@ describe('display pipeline - ad hoc edge cases', () => {
             settings,
           );
           expectPixelsWithinBounds(
-            jtImageGenerator.generateJTImage(text, largeText ? 'large' : 'small', 'yellow'),
+            jtImageGenerator.generateJTImage(text, largeText ? 'large' : 'small', Color.yellow),
           );
         }
       }
@@ -154,7 +156,7 @@ describe('display pipeline - ad hoc edge cases', () => {
         const text = buildDisplayText(telemetry, settings);
         const size = settings.largeText ? 'large' : 'small';
 
-        expectPixelsWithinBounds(jtImageGenerator.generateJTImage(text, size, 'cyan'));
+        expectPixelsWithinBounds(jtImageGenerator.generateJTImage(text, size, Color.cyan));
       }
     }
   });

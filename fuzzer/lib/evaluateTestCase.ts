@@ -14,7 +14,7 @@ export function evaluateTestCase(telemetryData: CarTelemetry, settings: Settings
     const imageData = jtImageGenerator.generateJTImage(
         text,
         settings.largeText ? "large" : "small",
-        "cyan",
+        settings.color,
     );
 
     const analysis = analyzeImageData(

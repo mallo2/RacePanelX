@@ -6,14 +6,14 @@ export type { JTSize };
 
 export type JTColor = readonly [number, number, number];
 
-const COLORS: { readonly [name in Color]: JTColor } = {
-  red: [255, 0, 0],
-  green: [0, 255, 0],
-  blue: [0, 0, 255],
-  magenta: [255, 0, 255],
-  yellow: [255, 255, 0],
-  cyan: [0, 255, 255],
-  white: [255, 255, 255],
+const COLORS: { readonly [key in Color]: JTColor } = {
+  [Color.red]: [255, 0, 0],
+  [Color.green]: [0, 255, 0],
+  [Color.blue]: [0, 0, 255],
+  [Color.magenta]: [255, 0, 255],
+  [Color.yellow]: [255, 255, 0],
+  [Color.cyan]: [0, 255, 255],
+  [Color.white]: [255, 255, 255],
 };
 
 const BLACK: JTColor = [0, 0, 0];
@@ -27,11 +27,11 @@ class JTImageGenerator {
   generateJTImage(
       text: string,
       size: JTSize = 'small',
-      color: Color = 'cyan',
+      color: Color = Color.cyan,
   ): number[] {
     const pixels = this.textToPixels(
         text,
-        COLORS[color] ?? COLORS.cyan,
+        COLORS[color] ?? COLORS[Color.cyan],
         JT_FONTS[size],
     );
 

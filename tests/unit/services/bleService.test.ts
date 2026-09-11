@@ -6,6 +6,7 @@ import {
   SetModeCommand,
 } from '@/services/commandService';
 import { DisplayStyle } from '@/types/settings/displayStyle';
+import { MOCK_DEVICE } from '@/services/mocks/bleService.mock';
 
 const ble = vi.hoisted(() => {
   const State = {
@@ -185,8 +186,10 @@ vi.mock('react-native-ble-plx', () => {
 });
 
 type BleServiceModule = typeof import('@/services/bleService');
+type E2EConfigModule = typeof import('@/config/e2eConfig');
 
 let bleService: BleServiceModule['default'];
+let e2eConfig: E2EConfigModule['e2eConfig'];
 
 const flush = async (): Promise<void> => {
   for (let i = 0; i < 50; i += 1) {
@@ -235,6 +238,7 @@ beforeEach(async () => {
   vi.resetModules();
 
   bleService = (await import('@/services/bleService')).default;
+  e2eConfig = (await import('@/config/e2eConfig')).e2eConfig;
 });
 
 afterEach(() => {
@@ -662,6 +666,28 @@ describe('bleService - disconnectDevice', () => {
     await expect(
       bleService.sendCommand(new SetModeCommand(DisplayStyle.static)),
     ).rejects.toThrow('Device not connected');
+  });
+
+  it('returns the mock device directly when e2eConfig.bleMock is enabled', async () => {
+    e2eConfig.bleMock = true;
+    try {
+      const devices = await bleService.scanForDevices();
+      expect(devices).toEqual([MOCK_DEVICE]);
+    } finally {
+      e2eConfig.bleMock = false;
+    }
+  });
+
+  it('connects to mock device directly when e2eConfig.bleMock is enabled', async () => {
+    e2eConfig.bleMock = true;
+    try {
+      await bleService.connectToDevice('any-id');
+      expect((bleService as any).isConnected).toBe(true);
+      expect((bleService as any).device.id).toBe(MOCK_DEVICE.id);
+    } finally {
+      e2eConfig.bleMock = false;
+      await bleService.disconnectDevice();
+    }
   });
 
   it('disconnects safely when no device was ever connected', async () => {

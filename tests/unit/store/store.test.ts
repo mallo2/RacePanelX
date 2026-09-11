@@ -3,7 +3,9 @@ import {
   resetBleState,
   setAdditionalDisplayMode,
   setCarNumber,
+  setColor,
   setConnectedDevice,
+  setConnectingDevice,
   setDevices,
   setDisplayStyle,
   setDisplayText,
@@ -19,6 +21,7 @@ import {
   type RootState,
 } from '@/store/store';
 import { AdditionalDisplayMode } from '@/types/settings/additionalDisplayMode';
+import { Color } from '@/types/settings/color';
 import { DisplayStyle } from '@/types/settings/displayStyle';
 import { LapDisplayMode } from '@/types/settings/lapDisplayMode';
 
@@ -59,6 +62,16 @@ describe('store - ble slice', () => {
     store.dispatch(setConnectedDevice(null));
     expect(store.getState().ble.isConnected).toBe(false);
     expect(store.getState().ble.connectedDevice).toBeNull();
+  });
+
+  it('tracks the connecting device with setConnectingDevice', () => {
+    store.dispatch(
+      setConnectingDevice({ id: 'conn-1', name: 'CoolLEDX-Conn', width: 96, height: 16 }),
+    );
+    expect(store.getState().ble.connectingDevice?.id).toBe('conn-1');
+
+    store.dispatch(setConnectingDevice(null));
+    expect(store.getState().ble.connectingDevice).toBeNull();
   });
 
   it('updates scanning and error fields', () => {
@@ -164,6 +177,7 @@ describe('store - settings slice', () => {
     store.dispatch(setCarNumber('42'));
     store.dispatch(setManualDisplay(true));
     store.dispatch(setLargeText(false));
+    store.dispatch(setColor(Color.red));
     store.dispatch(setDisplayStyle(DisplayStyle.slide));
     store.dispatch(setDisplayText('TEST'));
     store.dispatch(setLapDisplayMode(LapDisplayMode.delta));
@@ -173,6 +187,7 @@ describe('store - settings slice', () => {
     expect(settings.carNumber).toBe('42');
     expect(settings.manualDisplay).toBe(true);
     expect(settings.largeText).toBe(false);
+    expect(settings.color).toBe(Color.red);
     expect(settings.displayStyle).toBe(DisplayStyle.slide);
     expect(settings.displayText).toBe('TEST');
     expect(settings.lapDisplayMode).toBe(LapDisplayMode.delta);
