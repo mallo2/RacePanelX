@@ -10,7 +10,17 @@ import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
 import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
 import {getAdditionalDisplayModes} from "@/utils/displayTextBuilder";
 import {formatMessage, messages} from '@/i18n/messages';
+import {Color} from "@/types/settings/color";
 
+const COLOR_OPTIONS: { label: string; value: Color }[] = [
+  { label: messages.settings.red, value: 'red' },
+  { label: messages.settings.green, value: 'green' },
+  { label: messages.settings.blue, value: 'blue' },
+  { label: messages.settings.magenta, value: 'magenta' },
+  { label: messages.settings.yellow, value: 'yellow' },
+  { label: messages.settings.cyan, value: 'cyan' },
+  { label: messages.settings.white, value: 'white' },
+];
 
 const STYLE_DISPLAY_OPTIONS: { label: string; value: DisplayStyle }[] = [
   { label: messages.settings.styleStatic, value: DisplayStyle.static },
@@ -30,12 +40,14 @@ export const DisplayConfiguration: React.FC = React.memo(function DisplayConfigu
     localText,
     manualDisplay,
     largeText,
+    color,
     displayStyle,
     carNumber,
     lapDisplayMode,
     additionalDisplayMode,
     updateManualDisplay,
     updateLargeText,
+    updateColor,
     updateDisplayStyle,
     handleChangeText,
     handleEndEditing,
@@ -100,6 +112,14 @@ export const DisplayConfiguration: React.FC = React.memo(function DisplayConfigu
         hint={messages.settings.largeTextHint}
         value={largeText}
         onValueChange={updateLargeText}
+      />
+
+      <SettingsSegmentedControl
+          label={messages.settings.color}
+          options={COLOR_OPTIONS}
+          selectedValue={color}
+          onValueChange={updateColor}
+          hint={messages.settings.colorHint}
       />
 
       {manualDisplay ? (

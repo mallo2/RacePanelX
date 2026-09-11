@@ -1,20 +1,12 @@
 import { JT_FONTS, JTFont, JTSize } from '@/services/fonts/jtFonts';
 import { PANEL_CONFIG } from "@/config/config";
+import {Color} from "@/types/settings/color";
 
 export type { JTSize };
 
 export type JTColor = readonly [number, number, number];
 
-export type JTColorName =
-    | 'red'
-    | 'green'
-    | 'blue'
-    | 'magenta'
-    | 'yellow'
-    | 'cyan'
-    | 'white';
-
-const COLORS: { readonly [name in JTColorName]: JTColor } = {
+const COLORS: { readonly [name in Color]: JTColor } = {
   red: [255, 0, 0],
   green: [0, 255, 0],
   blue: [0, 0, 255],
@@ -35,11 +27,11 @@ class JTImageGenerator {
   generateJTImage(
       text: string,
       size: JTSize = 'small',
-      color: JTColorName = 'red',
+      color: Color = 'cyan',
   ): number[] {
     const pixels = this.textToPixels(
         text,
-        COLORS[color] ?? COLORS.red,
+        COLORS[color] ?? COLORS.cyan,
         JT_FONTS[size],
     );
 
@@ -73,7 +65,7 @@ class JTImageGenerator {
 
       if (!glyph) {
         console.warn(
-            `Avertissement : '${char}' non supporté, ignoré.`,
+            `Warning: '${char}' unsupported, ignored.`,
         );
         continue;
       }

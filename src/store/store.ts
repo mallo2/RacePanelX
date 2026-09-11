@@ -6,6 +6,7 @@ import {SettingsState} from "@/types/settings/state";
 import {DisplayStyle} from "@/types/settings/displayStyle";
 import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
 import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
+import {Color} from "@/types/settings/color";
 
 const initialState: BleState = {
   devices: [],
@@ -79,6 +80,7 @@ const settingsInitialState: SettingsState = {
   apiUrl: process.env.EXPO_PUBLIC_API_URL || '',
   uuid: process.env.EXPO_PUBLIC_UUID || '',
   manualDisplay: false,
+  color: "cyan",
   displayStyle: DisplayStyle.static,
   largeText: true,
   displayText: '',
@@ -98,6 +100,9 @@ const settingsSlice = createSlice({
     },
     setLargeText: (state, action: PayloadAction<boolean>) => {
       state.largeText = action.payload;
+    },
+    setColor: (state, action: PayloadAction<Color>) => {
+      state.color = action.payload;
     },
     setDisplayStyle: (state, action: PayloadAction<DisplayStyle>) => {
       state.displayStyle = action.payload;
@@ -120,6 +125,7 @@ export const {
   setCarNumber,
   setManualDisplay,
   setLargeText,
+  setColor,
   setDisplayStyle,
   setDisplayText,
   setLapDisplayMode,

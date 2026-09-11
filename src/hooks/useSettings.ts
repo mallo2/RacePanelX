@@ -8,12 +8,14 @@ import {
   setDisplayText,
   setLapDisplayMode,
   setLargeText,
+  setColor,
   setManualDisplay
 } from '@/store/store';
 import {DisplayStyle} from "@/types/settings/displayStyle";
 import {LapDisplayMode} from "@/types/settings/lapDisplayMode";
 import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
 import {formatDisplayText, LAP_MODES_WITH_OPPONENT} from "@/utils/displayTextBuilder";
+import {Color} from "@/types/settings/color";
 
 export const useSettings = () => {
   const dispatch = useDispatch();
@@ -47,6 +49,10 @@ export const useSettings = () => {
     dispatch(setLargeText(value));
   }, [dispatch]);
 
+  const updateColor = useCallback((value: Color) => {
+    dispatch(setColor(value));
+  }, [dispatch]);
+
   const updateDisplayStyle = useCallback((value: DisplayStyle) => {
     dispatch(setDisplayStyle(value));
   }, [dispatch]);
@@ -68,6 +74,7 @@ export const useSettings = () => {
     updateCarNumber,
     updateManualDisplay,
     updateLargeText,
+    updateColor,
     updateDisplayStyle,
     handleChangeText,
     handleEndEditing,
