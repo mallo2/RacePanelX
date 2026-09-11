@@ -1,0 +1,13 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Settings"
+- assertVisible: "Color"
+- tapOn: "Red"
+- tapOn: "Green"
+- tapOn: "Blue"
+- tapOn: "Magenta"
+- tapOn: "Yellow"
+- tapOn: "White"
+- tapOn: "Cyan"

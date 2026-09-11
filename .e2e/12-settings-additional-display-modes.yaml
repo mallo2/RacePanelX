@@ -1,0 +1,14 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Settings"
+- scroll
+- tapOn: "Large text"
+- assertVisible: "Additional display"
+- tapOn: "Position"
+- tapOn: "Car number"
+- tapOn: "Delta.*pole"
+- assertVisible: "Opponent number"
+- tapOn: "Opponent number"
+- tapOn: "Position"

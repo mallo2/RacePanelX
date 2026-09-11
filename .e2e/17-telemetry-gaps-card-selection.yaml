@@ -1,0 +1,29 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+        clearState: true
+- openLink:
+        link: "racepanelx://e2e?bleMock=true"
+- assertVisible: "Settings"
+- tapOn: ".*Connect a device"
+- assertVisible: ".*Scan"
+- tapOn: ".*Scan"
+- assertVisible: ".*Race Panel X Device.*"
+- tapOn: ".*Race Panel X Device.*"
+- assertVisible: "Settings"
+- tapOn: "123"
+- eraseText
+- inputText: "160"
+- assertVisible: "160"
+- tapOn: "Settings"
+- tapOn: "Telemetry"
+- assertVisible: ".*Gap.*ahead.*"
+- tapOn: ".*Gap.*ahead.*"
+- tapOn: "Settings"
+- scroll
+- assertVisible: ".*Gap.*ahead.*"
+- tapOn: "Telemetry"
+- assertVisible: ".*Gap.*behind.*"
+- tapOn: ".*Gap.*behind.*"
+- tapOn: "Settings"
+- assertVisible: ".*Gap.*behind.*"

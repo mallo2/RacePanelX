@@ -1,0 +1,22 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+
+- assertVisible: "Settings"
+- assertVisible: ".*Connect a device"
+- tapOn: ".*Connect a device"
+- assertVisible: "Bluetooth"
+- assertVisible: "Connect a device"
+- assertVisible: "LED panel"
+- assertVisible: "Connect your CoolLedX.*"
+- assertVisible: ".*Scan"
+- runFlow:
+      when:
+          visible: "Allow"
+      commands:
+          - tapOn: "Allow"
+- assertVisible: "No devices found"
+- tapOn: "Back"
+- assertVisible: "Settings"
+- assertVisible: "Device connection"

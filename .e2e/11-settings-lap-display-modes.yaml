@@ -1,0 +1,13 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Settings"
+- scroll
+- assertVisible: "Lap display"
+- assertVisible: "Best lap"
+- tapOn: "Last lap"
+- tapOn: "Delta*.pole"
+- tapOn: "Gap ahead.*"
+- tapOn: "Gap behind.*"
+- tapOn: "Best lap"

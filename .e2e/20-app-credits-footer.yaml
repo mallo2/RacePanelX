@@ -1,0 +1,17 @@
+appId: be.malloryBouchard.RacePanelX
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Settings"
+- assertVisible: ".*Connect a device.*"
+- tapOn: ".*Connect a device.*"
+- assertVisible: ".*Scan.*"
+- scroll
+- assertVisible: "© Mallory BOUCHARD"
+- tapOn: "Back"
+- assertVisible: "Settings"
+- scroll
+- assertVisible: "© Mallory BOUCHARD"
+- tapOn: "Telemetry"
+- scroll
+- assertVisible: "© Mallory BOUCHARD"

@@ -34,7 +34,9 @@ export function FloatingTabBar({ state, navigation, insets }: Readonly<FloatingT
             <Pressable
               key={route.key}
               accessibilityRole="tab"
+              accessibilityLabel={meta.label}
               accessibilityState={{ selected: focused }}
+              testID={`tab-${route.name}`}
               onPress={() => navigation.navigate(route.name)}
               style={({ pressed }) => [styles.item, pressed && styles.itemPressed]}
             >
