@@ -6,9 +6,10 @@ import {buildDisplayText} from "@/utils/displayTextBuilder";
 import {DisplayStyle} from "@/types/settings/displayStyle";
 import bleService from "@/services/bleService";
 import { SetJTCommand, SetModeCommand } from "@/services/commandService";
+import {Color} from "@/types/settings/color";
 
 export function useBleDisplaySync(telemetryData: CarTelemetry | null, settings: SettingsState) {
-    const lastSentRef = useRef<{ text: string; style: DisplayStyle; manual: boolean } | null>(null);
+    const lastSentRef = useRef<{ text: string; color: Color; style: DisplayStyle; manual: boolean } | null>(null);
     const inFlightRef = useRef(false);
     const pendingRef = useRef(false);
     const latestTelemetryRef = useRef<CarTelemetry | null>(telemetryData);
@@ -27,6 +28,7 @@ export function useBleDisplaySync(telemetryData: CarTelemetry | null, settings: 
         const hasChanged =
             !last ||
             last?.text !== textToSend ||
+            last?.color !== settings.color ||
             last?.style !== modeToUse ||
             last?.manual !== settings.manualDisplay;
 
@@ -51,11 +53,13 @@ export function useBleDisplaySync(telemetryData: CarTelemetry | null, settings: 
                     const currentText = buildDisplayText(currentTelemetry, currentSettings);
                     if (!currentText) { continue; }
 
+                    const currentColor = currentSettings.color;
                     const currentMode = currentSettings.manualDisplay ? currentSettings.displayStyle : DisplayStyle.static;
                     const currentLast = lastSentRef.current;
 
                     const shouldSend =
                         currentLast?.text !== currentText ||
+                        currentLast.color !== currentColor ||
                         currentLast.style !== currentMode ||
                         currentLast.manual !== currentSettings.manualDisplay;
 
@@ -66,7 +70,7 @@ export function useBleDisplaySync(telemetryData: CarTelemetry | null, settings: 
                     const imageData = jtImageGenerator.generateJTImage(
                         currentText,
                         currentSettings.largeText ? 'large' : 'small',
-                        'cyan'
+                        currentSettings.color
                     );
 
                     if (currentLast?.style !== currentMode) {
@@ -76,6 +80,7 @@ export function useBleDisplaySync(telemetryData: CarTelemetry | null, settings: 
 
                     lastSentRef.current = {
                         text: currentText,
+                        color: currentColor,
                         style: currentMode,
                         manual: currentSettings.manualDisplay,
                     };

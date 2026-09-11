@@ -91,11 +91,11 @@ describe('jtImageGenerator - output format', () => {
     }
   });
 
-  it('falls back to red for an unknown color', () => {
+  it('falls back to cyan for an unknown color', () => {
     const fallback = jtImageGenerator.generateJTImage('A', 'small', 'nope' as never);
-    const red = jtImageGenerator.generateJTImage('A', 'small', 'red');
+    const cyan = jtImageGenerator.generateJTImage('A', 'small', 'cyan');
 
-    expect(fallback).toEqual(red);
+    expect(fallback).toEqual(cyan);
   });
 });
 
