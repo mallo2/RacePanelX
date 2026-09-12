@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import * as Localization from 'expo-localization';
 
 export const en = {
   common: {
@@ -182,29 +182,9 @@ const fr: Messages = {
   },
 };
 
-function resolveLanguageCode(): string {
-  try {
-    if (Platform.OS === 'web') {
-      return typeof navigator !== 'undefined' ? navigator.language : 'en';
-    }
-
-    if (Platform.OS === 'ios') {
-      const settings = NativeModules.SettingsManager?.settings as
-        | { AppleLocale?: string; AppleLanguages?: string[] }
-        | undefined;
-      return settings?.AppleLocale ?? settings?.AppleLanguages?.[0] ?? 'en';
-    }
-
-    const i18n = NativeModules.I18nManager as { localeIdentifier?: string } | undefined;
-    return i18n?.localeIdentifier ?? 'en';
-  } catch {
-    return 'en';
-  }
-}
-
-const languageCode = resolveLanguageCode().toLowerCase().replace('_', '-').split('-')[0];
-
-export const isFrench = languageCode === 'fr';
+const locales = Localization.getLocales();
+const deviceLanguage = locales[0]?.languageCode ?? 'en';
+export const isFrench = deviceLanguage.startsWith('fr');
 
 export const messages: Messages = isFrench ? fr : en;
 
