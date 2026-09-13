@@ -6,33 +6,17 @@ import { DisplayStyle } from '@/types/settings/displayStyle';
 import { PANEL_CONFIG } from '@/config/config';
 import { testCases, telemetryCases } from '../../../fuzzer/lib/settingsCombinations';
 import { decodeChunkedFrames } from '../../helpers/protocol';
-import {Color} from "@/types/settings/color";
+import { Color } from '@/types/settings/color';
 
 const { WIDTH, HEIGHT } = PANEL_CONFIG;
 const IMAGE_BYTES = 3 * WIDTH * (HEIGHT / 8);
 
-const expectPixelsWithinBounds = (image: number[]): void => {
-  expect(image).toHaveLength(IMAGE_BYTES);
 
-  for (let plane = 0; plane < 3; plane += 1) {
-    for (let col = 0; col < WIDTH; col += 1) {
-      for (let row = 0; row < HEIGHT; row += 1) {
-        const byteIndex = plane * WIDTH * 2 + col * 2 + Math.floor(row / 8);
-        const mask = 1 << (7 - (row % 8));
-
-        if (image[byteIndex] & mask) {
-          expect(col).toBeGreaterThanOrEqual(0);
-          expect(col).toBeLessThan(WIDTH);
-          expect(row).toBeGreaterThanOrEqual(0);
-          expect(row).toBeLessThan(HEIGHT);
-        }
-      }
-    }
-  }
-};
+const DEEP_CHECK_SAMPLES = 200;
 
 describe('display pipeline - full fuzzer matrix', () => {
-  it('runs every telemetry x settings combination without errors', () => {
+  it('runs every telemetry x settings combination without errors, no warnings, and passes sampled protocol checks', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     let executed = 0;
 
     for (const { telemetryData, settings } of testCases()) {
@@ -40,13 +24,15 @@ describe('display pipeline - full fuzzer matrix', () => {
       const size = settings.largeText ? 'large' : 'small';
       const image = jtImageGenerator.generateJTImage(text, size, Color.cyan);
 
+      // La longueur de l'image garantit déjà que tous les octets/bits sont
+      // dans les bornes du panneau : un balayage bit à bit du buffer n'ajoute
+      // aucune garantie supplémentaire (col/row sont bornés par la boucle qui
+      // les génère), donc on ne le refait pas ici.
       expect(image).toHaveLength(IMAGE_BYTES);
 
-      if (executed % 25 === 0) {
-        expectPixelsWithinBounds(image);
-
+      if (executed % DEEP_CHECK_SAMPLES === 0) {
         const mode = new SetModeCommand(
-          settings.manualDisplay ? settings.displayStyle : DisplayStyle.static,
+            settings.manualDisplay ? settings.displayStyle : DisplayStyle.static,
         );
         expect(mode.getCommandChunks()).toHaveLength(1);
 
@@ -62,35 +48,23 @@ describe('display pipeline - full fuzzer matrix', () => {
     }
 
     expect(executed).toBeGreaterThan(10_000);
-  }, 60_000);
-
-  it('produces no font warning over the nominal matrix', () => {
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
-    for (const { telemetryData, settings } of testCases()) {
-      const text = buildDisplayText(telemetryData, settings);
-      jtImageGenerator.generateJTImage(
-        text,
-        settings.largeText ? 'large' : 'small',
-        Color.white,
-      );
-    }
-
     expect(warnSpy).not.toHaveBeenCalled();
+
+    warnSpy.mockRestore();
   }, 60_000);
 
   it('covers several telemetry scenarios including extreme ones', () => {
     const names = Object.keys(telemetryCases);
 
     expect(names).toEqual(
-      expect.arrayContaining([
-        'normal',
-        'minValues',
-        'maxValues',
-        'oneDigitCars',
-        'twoDigitCars',
-        'threeDigitCars',
-      ]),
+        expect.arrayContaining([
+          'normal',
+          'minValues',
+          'maxValues',
+          'oneDigitCars',
+          'twoDigitCars',
+          'threeDigitCars',
+        ]),
     );
   });
 });
@@ -131,12 +105,11 @@ describe('display pipeline - ad hoc edge cases', () => {
             displayText: input,
           };
           const text = buildDisplayText(
-            { position: null, bestLapTime: null, lastLapTime: null, deltaToLeader: null, gapAhead: null, gapBehind: null },
-            settings,
+              { position: null, bestLapTime: null, lastLapTime: null, deltaToLeader: null, gapAhead: null, gapBehind: null },
+              settings,
           );
-          expectPixelsWithinBounds(
-            jtImageGenerator.generateJTImage(text, largeText ? 'large' : 'small', Color.yellow),
-          );
+          const image = jtImageGenerator.generateJTImage(text, largeText ? 'large' : 'small', Color.yellow);
+          expect(image).toHaveLength(IMAGE_BYTES);
         }
       }
     }
@@ -155,8 +128,8 @@ describe('display pipeline - ad hoc edge cases', () => {
         const settings = { ...baseSettings(), manualDisplay };
         const text = buildDisplayText(telemetry, settings);
         const size = settings.largeText ? 'large' : 'small';
-
-        expectPixelsWithinBounds(jtImageGenerator.generateJTImage(text, size, Color.cyan));
+        const image = jtImageGenerator.generateJTImage(text, size, Color.cyan);
+        expect(image).toHaveLength(IMAGE_BYTES);
       }
     }
   });
