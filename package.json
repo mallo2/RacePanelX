@@ -31,7 +31,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-nitro-cookies": "^1.2.1",
     "react-native-nitro-modules": "^0.37.1",
-    "react-native-reanimated": "4.5.1",
+    "react-native-reanimated": "4.6.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.27.0",
     "react-native-web": "~0.21.0",
