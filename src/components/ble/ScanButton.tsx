@@ -20,10 +20,11 @@ interface ScanButtonProps {
 
 const ScanButton: React.FC<ScanButtonProps> = ({ isScanning, onPress, style }) => (
   <TouchableOpacity
-    activeOpacity={0.85}
-    style={[styles.button, isScanning && styles.buttonScanning, style]}
-    onPress={onPress}
-    disabled={isScanning}
+      key={isScanning ? 'scanning' : 'idle'}
+      activeOpacity={0.85}
+      style={[styles.button, isScanning && styles.buttonScanning, style]}
+      onPress={onPress}
+      disabled={isScanning}
   >
     {!isScanning && <BrandGradientFill radius={RADIUS.md} />}
 
