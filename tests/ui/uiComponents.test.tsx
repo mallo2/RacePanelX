@@ -24,6 +24,7 @@ import { FloatingTabBar } from '@/components/ui/FloatingTabBar';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { GradientText } from '@/components/ui/GradientText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import {CustomSwitch} from "@/components/ui/CustomSwitch";
 
 describe('ScreenHeader', () => {
   it('renders the eyebrow, title, subtitle and right element', async () => {
@@ -235,5 +236,36 @@ describe('FloatingTabBar', () => {
     await user.press(screen.getByText('Settings'));
 
     expect(navigation.navigate).toHaveBeenCalledWith('index');
+  });
+
+  describe('CustomSwitch', () => {
+    it('renders as an unchecked switch by default and calls onValueChange with true on press', async () => {
+      const onValueChange = jest.fn();
+
+      await render(<CustomSwitch value={false} onValueChange={onValueChange} />);
+
+      const switchElement = screen.getByRole('switch');
+
+      expect(switchElement.props.accessibilityState).toEqual({ checked: false });
+
+      await fireEvent.press(switchElement);
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith(true);
+    });
+
+    it('renders as a checked switch and calls onValueChange with false on press', async () => {
+      const onValueChange = jest.fn();
+
+      await render(<CustomSwitch value={true} onValueChange={onValueChange} />);
+
+      const switchElement = screen.getByRole('switch');
+
+      expect(switchElement.props.accessibilityState).toEqual({ checked: true });
+      expect(screen.toJSON()).not.toBeNull();
+
+      await fireEvent.press(switchElement);
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith(false);
+    });
   });
 });
