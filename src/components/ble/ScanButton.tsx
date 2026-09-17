@@ -51,18 +51,11 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: SPACING.lg,
     overflow: 'hidden',
-    shadowColor: COLORS.blue,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
-    shadowRadius: 14,
-    elevation: 8,
   },
   buttonScanning: {
     backgroundColor: COLORS.waiting,
     borderWidth: 1,
     borderColor: COLORS.waitingBorder,
-    shadowOpacity: 0,
-    elevation: 0,
   },
   text: {
     color: '#FFFFFF',
