@@ -2,7 +2,7 @@ appId: be.malloryBouchard.RacePanelX
 ---
 - launchApp:
       clearState: true
-
+- waitForAnimationToEnd
 - openLink:
       link: "racepanelx://e2e?bleMock=true"
 - assertVisible: "Settings"
