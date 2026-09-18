@@ -1,4 +1,4 @@
-import { TextStyle, ViewStyle } from 'react-native';
+import { TextStyle } from 'react-native';
 
 export const COLORS = {
   cyan: '#19E8F5',
@@ -90,21 +90,4 @@ export const TYPOGRAPHY: Record<string, TextStyle> = {
     textTransform: 'uppercase',
     color: COLORS.textHint,
   },
-};
-
-export const SHADOWS = {
-  card: {
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.35,
-    shadowRadius: 24,
-    elevation: 10,
-  } as ViewStyle,
-  glow: {
-    shadowColor: COLORS.blue,
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.55,
-    shadowRadius: 18,
-    elevation: 8,
-  } as ViewStyle,
 };

@@ -30,6 +30,7 @@ export const useBleScan = (onConnect?: (device: BleDevice) => void) => {
     try {
       const foundDevices = await bleService.scanForDevices();
       dispatch(setDevices(foundDevices));
+      dispatch(setIsScanning(false));
       if (foundDevices.length === 0) {
         Alert.alert('No Devices', 'No CoolLEDX devices found');
       }
@@ -37,8 +38,6 @@ export const useBleScan = (onConnect?: (device: BleDevice) => void) => {
       const errorMessage = err instanceof Error ? err.message : String(err);
       dispatch(setError(`Scan failed: ${errorMessage}`));
       Alert.alert('Scan Error', errorMessage);
-    } finally {
-      dispatch(setIsScanning(false));
     }
   }, [dispatch]);
 

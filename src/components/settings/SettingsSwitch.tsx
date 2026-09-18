@@ -1,6 +1,7 @@
 import React from 'react';
-import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import {Platform, Pressable, StyleSheet, Switch, Text, View} from 'react-native';
 import { COLORS, SPACING, TYPOGRAPHY } from '@/styles/theme';
+import {CustomSwitch} from "@/components/ui/CustomSwitch";
 
 interface SettingsSwitchProps {
   label: string;
@@ -27,14 +28,24 @@ export const SettingsSwitch: React.FC<SettingsSwitchProps> = React.memo(function
             <Text style={styles.label}>{label}</Text>
             {!!hint && <Text style={styles.hint}>{hint}</Text>}
           </View>
-          <Switch
-              value={value}
-              onValueChange={onValueChange}
-              trackColor={{ true: COLORS.primary, false: 'rgba(255,255,255,0.22)' }}
-              thumbColor="#FFFFFF"
-              ios_backgroundColor="rgba(255,255,255,0.22)"
-              pointerEvents="none"
-          />
+          {Platform.OS === 'ios' ? (
+              <Switch
+                  value={value}
+                  onValueChange={onValueChange}
+                  trackColor={{
+                    true: COLORS.primary,
+                    false: 'rgba(255,255,255,0.22)',
+                  }}
+                  thumbColor="#FFFFFF"
+                  ios_backgroundColor="rgba(255,255,255,0.22)"
+                  pointerEvents="none"
+              />
+          ) : (
+              <CustomSwitch
+                  value={value}
+                  onValueChange={onValueChange}
+              />
+          )}
         </View>
       </Pressable>
   );
