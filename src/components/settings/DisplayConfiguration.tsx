@@ -11,6 +11,7 @@ import {AdditionalDisplayMode} from "@/types/settings/additionalDisplayMode";
 import {getAdditionalDisplayModes} from "@/utils/displayTextBuilder";
 import {formatMessage, messages} from '@/i18n/messages';
 import {Color} from "@/types/settings/color";
+import {SettingsPicker} from "@/components/settings/SettingsPicker";
 
 const COLOR_OPTIONS: { label: string; value: Color }[] = [
   { label: messages.settings.red, value: Color.red },
@@ -114,7 +115,7 @@ export const DisplayConfiguration: React.FC = React.memo(function DisplayConfigu
         onValueChange={updateLargeText}
       />
 
-      <SettingsSegmentedControl
+      <SettingsPicker
           label={messages.settings.color}
           options={COLOR_OPTIONS}
           selectedValue={color}

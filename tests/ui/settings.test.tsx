@@ -1,13 +1,17 @@
 import React from 'react';
 import { describe, expect, it, jest } from '@jest/globals';
 import { Text } from 'react-native';
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import {fireEvent, render, screen, waitFor} from '@testing-library/react-native';
 import { FormField } from '@/components/settings/FormField';
 import { SettingsInput } from '@/components/settings/SettingsInput';
 import { SettingsNumberInput } from '@/components/settings/SettingsNumberInput';
 import { SettingsSection } from '@/components/settings/SettingsSection';
 import { SettingsSegmentedControl } from '@/components/settings/SettingsSegmentedControl';
 import { SettingsSwitch } from '@/components/settings/SettingsSwitch';
+import {PickerControl} from "@/components/ui/picker/PickerControl";
+import {PickerOptionRow} from "@/components/ui/picker/PickerOptionRow";
+import {ItemSeparator} from "@/components/ui/picker/ItemSeparator";
+import {SettingsPicker} from "@/components/settings/SettingsPicker";
 
 jest.mock('@/components/ui/BrandGradientFill', () => {
   const React = require('react');
@@ -16,6 +20,16 @@ jest.mock('@/components/ui/BrandGradientFill', () => {
   return {
     BrandGradientFill: (props: Record<string, unknown>) =>
       React.createElement(View, { ...props, testID: 'brand-gradient' }),
+  };
+});
+
+jest.mock('expo-blur', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+
+  return {
+    BlurView: (props: Record<string, unknown>) =>
+        React.createElement(View, { ...props, testID: 'blur-view' }),
   };
 });
 
@@ -288,5 +302,179 @@ describe('SettingsSegmentedControl', () => {
     );
 
     expect(screen.queryAllByTestId('brand-gradient')).toHaveLength(0);
+  });
+});
+
+describe('PickerControl', () => {
+  it('renders the label, hint and selected value', async () => {
+    await render(
+        <PickerControl
+            label="Mode"
+            hint="Choose a display mode"
+            valueLabel="Static"
+            onPress={jest.fn()}
+        />,
+    );
+
+    expect(screen.getByText('Mode')).toBeTruthy();
+    expect(screen.getByText('Choose a display mode')).toBeTruthy();
+    expect(screen.getByText('Static')).toBeTruthy();
+  });
+
+  it('calls onPress when pressed', async () => {
+    const onPress = jest.fn();
+
+    await render(
+        <PickerControl valueLabel="Static" onPress={onPress} />,
+    );
+
+    await fireEvent.press(screen.getByRole('button'));
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('sets the accessibility value to the selected label', async () => {
+    await render(
+        <PickerControl valueLabel="Slide" onPress={jest.fn()} />,
+    );
+
+    expect(screen.getByRole('button').props.accessibilityValue).toEqual({ text: 'Slide' });
+  });
+});
+
+describe('PickerOptionRow', () => {
+  it('renders the option label and the check icon when active', async () => {
+    await render(
+        <PickerOptionRow
+            label="Static"
+            isActive
+            isFirst
+            isLast
+            onPress={jest.fn()}
+        />,
+    );
+
+    expect(screen.getByText('Static')).toBeTruthy();
+    expect(screen.getByRole('menuitem').props.accessibilityState).toEqual({ selected: true });
+  });
+
+  it('calls onPress when pressed', async () => {
+    const onPress = jest.fn();
+
+    await render(
+        <PickerOptionRow
+            label="Slide"
+            isActive={false}
+            isFirst={false}
+            isLast={false}
+            onPress={onPress}
+        />,
+    );
+
+    await fireEvent.press(screen.getByRole('menuitem'));
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('marks the item as not selected when inactive', async () => {
+    await render(
+        <PickerOptionRow
+            label="Slide"
+            isActive={false}
+            isFirst={false}
+            isLast={false}
+            onPress={jest.fn()}
+        />,
+    );
+
+    expect(screen.getByRole('menuitem').props.accessibilityState).toEqual({ selected: false });
+  });
+});
+
+describe('ItemSeparator', () => {
+  it('renders a separator view', async () => {
+    await render(<ItemSeparator />);
+
+    expect(screen.toJSON()).not.toBeNull();
+  });
+});
+
+describe('SettingsPicker', () => {
+  const options = [
+    { label: 'Static', value: 'static' },
+    { label: 'Slide', value: 'slide' },
+    { label: 'Marquee', value: 'marquee' },
+  ];
+
+  it('renders the control with the selected option label', async () => {
+    await render(
+        <SettingsPicker
+            label="Style"
+            hint="Pick a display mode"
+            options={options}
+            selectedValue="slide"
+            onValueChange={jest.fn()}
+        />,
+    );
+
+    expect(screen.getByText('Style')).toBeTruthy();
+    expect(screen.getByText('Pick a display mode')).toBeTruthy();
+    expect(screen.getByText('Slide')).toBeTruthy();
+  });
+
+  it('opens the modal and shows the options when the control is pressed', async () => {
+    await render(
+        <SettingsPicker
+            label="Style"
+            options={options}
+            selectedValue="static"
+            onValueChange={jest.fn()}
+        />,
+    );
+
+    await fireEvent.press(screen.getByRole('button'));
+
+    expect(screen.getByTestId('blur-view')).toBeTruthy();
+
+    // Le texte "Static" existe au moins 2 fois: dans le contrôle + dans la liste
+    expect(screen.getAllByText('Static').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('Slide').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Marquee').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('calls onValueChange and closes when an option is selected', async () => {
+    const onValueChange = jest.fn();
+
+    await render(
+        <SettingsPicker
+            label="Style"
+            options={options}
+            selectedValue="static"
+            onValueChange={onValueChange}
+        />,
+    );
+
+    await fireEvent.press(screen.getByRole('button'));
+    await fireEvent.press(screen.getByText('Marquee'));
+
+    expect(onValueChange).toHaveBeenCalledWith('marquee');
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('blur-view')).toBeNull();
+    });
+  });
+
+  it('highlights the active option in the list', async () => {
+    await render(
+        <SettingsPicker
+            label="Style"
+            options={options}
+            selectedValue="slide"
+            onValueChange={jest.fn()}
+        />,
+    );
+
+    await fireEvent.press(screen.getByRole('button'));
+
+    // Dans la liste, il y a une occurrence de "Slide" active; on vérifie qu'elle est bien présente.
+    expect(screen.getAllByText('Slide').length).toBeGreaterThanOrEqual(2);
   });
 });
