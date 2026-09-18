@@ -72,7 +72,15 @@
           "bluetoothAlwaysPermission": "This app needs access to Bluetooth to scan for and connect to CoolLedX LED panels even when the app is in background."
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "enableSceneSupport": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
