@@ -24,6 +24,7 @@ export const PickerOptionRow: React.FC<PickerOptionRowProps> = React.memo(
             onPress={onPress}
             accessibilityRole="menuitem"
             accessibilityState={{ selected: isActive }}
+            accessibilityValue={{ text: label }}
         >
             <Text style={[styles.optionText, isActive && styles.optionTextActive]} numberOfLines={1}>
                 {label}

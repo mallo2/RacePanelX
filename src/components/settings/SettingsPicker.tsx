@@ -72,7 +72,7 @@ const SettingsPickerInner = <T extends string | number>({
             <PickerControl label={label} hint={hint} valueLabel={selectedLabel} onPress={openPicker} />
 
             <Modal visible={open} transparent animationType="fade" onRequestClose={closePicker}>
-                <Pressable style={styles.modalBackdrop} onPress={closePicker}>
+                <Pressable style={styles.modalBackdrop} onPress={closePicker} accessible={false}>
                     <BlurView intensity={40} tint="dark" style={styles.modalContent}>
                         <View style={styles.modalTint}>
                             <FlatList

@@ -23,6 +23,7 @@ export const PickerControl: React.FC<PickerControlProps> = React.memo(
                 onPress={onPress}
                 accessibilityRole="button"
                 accessibilityLabel={label}
+                accessibilityValue={{ text: valueLabel }}
             >
                 <Text style={styles.controlText} numberOfLines={1}>
                     {valueLabel}
