@@ -55,7 +55,7 @@
     "eslint-config-expo": "~57.0.2",
     "jest": "^30.5.1",
     "jest-expo": "~57.0.5",
-    "react-test-renderer": "19.2.3",
+    "react-test-renderer": "19.3.0",
     "tsx": "^4.23.13",
     "typescript": "~6.0.3",
     "vite": "^8.3.0",
