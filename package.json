@@ -53,7 +53,7 @@
     "decode-uri-component": ">=0.5.0",
     "eslint": "^9.39.5",
     "eslint-config-expo": "~57.0.2",
-    "jest": "^30.5.1",
+    "jest": "^30.5.2",
     "jest-expo": "~57.0.5",
     "react-test-renderer": "19.3.0",
     "tsx": "^4.23.13",
