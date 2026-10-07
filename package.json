@@ -41,7 +41,7 @@
     "react-redux": "^9.3.0"
   },
   "devDependencies": {
-    "@react-native/jest-preset": "~0.86.3",
+    "@react-native/jest-preset": "~0.87.1",
     "@stryker-mutator/core": "^10.0.0",
     "@stryker-mutator/vitest-runner": "^10.0.0",
     "@testing-library/react-native": "^14.0.1",
