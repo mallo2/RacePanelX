@@ -3,10 +3,6 @@ name: Test suite
 on:
   workflow_call:
 
-  push:
-    branches:
-      - main
-
 concurrency:
   group: tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
