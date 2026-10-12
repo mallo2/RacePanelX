@@ -29,7 +29,7 @@
     "react-dom": "19.3.0",
     "react-native": "0.86.3",
     "react-native-ble-plx": "^3.5.1",
-    "react-native-gesture-handler": "~3.2.1",
+    "react-native-gesture-handler": "~3.3.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-nitro-cookies": "^1.2.1",
     "react-native-nitro-modules": "^0.37.1",
