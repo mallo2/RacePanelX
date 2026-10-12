@@ -44,7 +44,7 @@
     "@react-native/jest-preset": "~0.86.3",
     "@stryker-mutator/core": "^10.0.0",
     "@stryker-mutator/vitest-runner": "^10.0.0",
-    "@testing-library/react-native": "^14.0.1",
+    "@testing-library/react-native": "^14.1.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.5.0",
     "@types/pngjs": "^6.0.5",
