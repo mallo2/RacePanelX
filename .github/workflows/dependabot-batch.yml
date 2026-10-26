@@ -2,12 +2,16 @@ name: Dependabot weekly batch
 
 # How it works:
 #  1. Runs when the "Dependabot Updates" workflow finishes (or manually).
-#  2. Waits for the checks of each open Dependabot PR and keeps the green ones.
+#  2. Collects open Dependabot PRs (+ PRs of the batch about to be replaced),
+#     waits for their checks and keeps the green ones.
 #  3. Merges those branches into a deps/batch-* branch, regenerates the lockfile
 #     with npm install, then opens ONE grouped PR (which triggers your CI).
-#  4. When the grouped PR is merged, closes the individual PRs with a comment
-#     "merged into #XXX". If it is rejected/closed without merging, the
-#     individual PRs are left untouched.
+#  4. Right after creation, the individual PRs included in the batch are closed
+#     with a comment "included in #XXX", and any previous open batch is closed
+#     (replaced), like Dependabot does when .15 becomes .16.
+#  5. If the batch is closed WITHOUT being merged (and not replaced), the
+#     individual PRs are reopened through "@dependabot reopen".
+#     If it is merged, nothing else to do: they are already closed.
 
 on:
   workflow_run:
@@ -24,14 +28,15 @@ jobs:
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 60
-    # Prevents two batches from running in parallel (Dependabot Updates can trigger several times)
+    # Prevents two batches from running in parallel
     concurrency:
       group: dependabot-batch-build
       cancel-in-progress: false
     permissions:
       contents: read
     env:
-      # PAT (or GitHub App token) required so that CI runs on the grouped PR.
+      # PAT (or GitHub App token) required so that CI runs on the grouped PR
+      # and so that Dependabot accepts our commands.
       # Must exist as both an Actions secret AND a Dependabot secret.
       GH_TOKEN: ${{ secrets.BATCH_PAT }}
       GH_REPO: ${{ github.repository }}
@@ -47,31 +52,44 @@ jobs:
         with:
           node-version: lts/*   # adjust to your version (or node-version-file: .nvmrc)
 
-      - name: Skip if a batch is already open
-        id: guard
-        run: |
-          open=$(gh pr list --state open --json headRefName \
-            --jq '[.[] | select(.headRefName | startswith("deps/batch-"))] | length')
-          if [ "$open" -gt 0 ]; then
-            echo "A batch is already open, nothing to do."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Build the batch
-        if: steps.guard.outputs.skip != 'true'
         run: |
           set -uo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # --- Batches currently open: they will be replaced -------------------
+          old_batches=$(gh pr list --state open --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("deps/batch-")) | .number')
+
+          # PRs already included in those batches (closed by a previous run)
+          old_prs=""
+          for ob in $old_batches; do
+            ids=$(gh pr view "$ob" --json body --jq .body \
+                  | grep -oE 'batch-prs:[0-9,]+' | cut -d: -f2 | tr ',' ' ')
+            old_prs="$old_prs $ids"
+          done
+
+          # Candidates: open Dependabot PRs first (most recent versions win),
+          # then PRs of the previous batch (stale ones will conflict and be skipped).
+          open_prs=$(gh pr list --author "app/dependabot" --state open --base "$BASE" \
+                       --json number --jq '.[].number')
+          candidates=$(printf '%s\n' $open_prs $old_prs | awk 'NF && !seen[$0]++')
 
           BRANCH="deps/batch-$(date +%F-%H%M)"
           git checkout -b "$BRANCH"
 
           merged=()
 
-          for pr in $(gh pr list --author "app/dependabot" --state open --base "$BASE" \
-                        --json number --jq '.[].number'); do
+          for pr in $candidates; do
             echo "::group::PR #$pr"
+
+            state=$(gh pr view "$pr" --json state --jq .state)
+            if [ "$state" = "MERGED" ]; then
+              echo "Already merged: skipped."
+              echo "::endgroup::"
+              continue
+            fi
 
             # Waits for checks to finish; exit code 0 = everything is green
             if ! gh pr checks "$pr" --watch --interval 30 >/dev/null 2>&1; then
@@ -81,10 +99,15 @@ jobs:
             fi
 
             ref=$(gh pr view "$pr" --json headRefName --jq .headRefName)
-            git fetch origin "$ref"
+            # pull/N/head still exists even if the branch was deleted on close
+            if ! git fetch origin "pull/$pr/head"; then
+              echo "Cannot fetch PR head: skipped."
+              echo "::endgroup::"
+              continue
+            fi
 
             ok=0
-            if git merge --no-ff --no-commit "origin/$ref" >/dev/null 2>&1; then
+            if git merge --no-ff --no-commit FETCH_HEAD >/dev/null 2>&1; then
               ok=1
             else
               conflicts=$(git diff --name-only --diff-filter=U)
@@ -128,12 +151,35 @@ jobs:
           body=$(printf '%s\n\n%s\n\n%s\n\n%s' \
             "Weekly batch of Dependabot updates whose checks were green." \
             "$list" \
-            "If this PR is merged, the PRs above will be closed automatically. Otherwise they are left unchanged." \
+            "The PRs above are closed while this batch is open. If this PR is merged they stay closed; if it is rejected they are reopened." \
             "<!-- batch-prs:${csv} -->")
 
-          gh pr create --base "$BASE" --head "$BRANCH" \
+          new_url=$(gh pr create --base "$BASE" --head "$BRANCH" \
             --title "chore(deps): weekly dependency batch" \
-            --body "$body"
+            --body "$body") || { echo "::error::PR creation failed"; exit 1; }
+          new_number="${new_url##*/}"
+          echo "New batch: #$new_number"
+
+          # --- Replace previous batches ----------------------------------------
+          for old in $old_batches; do
+            echo "Replacing old batch #$old"
+            # Remove the marker so that the cleanup job does NOT reopen its PRs
+            gh pr edit "$old" --body "Replaced by #${new_number}." || true
+            gh pr close "$old" --delete-branch \
+              --comment "Replaced by #${new_number} (new batch with the latest Dependabot updates)." \
+              || echo "Could not close #$old"
+          done
+
+          # --- Close the individual PRs now included in the new batch ----------
+          for pr in "${merged[@]}"; do
+            state=$(gh pr view "$pr" --json state --jq .state)
+            if [ "$state" = "OPEN" ]; then
+              echo "Closing #$pr"
+              gh pr close "$pr" \
+                --comment "Included in batch PR #${new_number}. Closing automatically (reopened if the batch is rejected)." \
+                || echo "Could not close #$pr"
+            fi
+          done
 
   cleanup:
     if: >
@@ -144,22 +190,24 @@ jobs:
       pull-requests: write
       contents: write
     env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # PAT so that "@dependabot reopen" is taken into account
+      GH_TOKEN: ${{ secrets.BATCH_PAT }}
       GH_REPO: ${{ github.repository }}
       BATCH_NUMBER: ${{ github.event.pull_request.number }}
       BATCH_BODY: ${{ github.event.pull_request.body }}
       BATCH_REF: ${{ github.event.pull_request.head.ref }}
       MERGED: ${{ github.event.pull_request.merged }}
     steps:
-      - name: Close the individual PRs included in the batch
-        if: env.MERGED == 'true'
+      # Batch closed without merge and NOT replaced (marker still in the body):
+      # give the individual PRs back to Dependabot.
+      - name: Reopen the individual PRs if the batch was rejected
+        if: env.MERGED != 'true'
         run: |
-          ids=$(printf '%s' "$BATCH_BODY" | grep -oE 'batch-prs:[0-9,]+' | cut -d: -f2)
+          ids=$(printf '%s' "$BATCH_BODY" | grep -oE 'batch-prs:[0-9,]+' | cut -d: -f2 || true)
           for id in ${ids//,/ }; do
-            echo "Closing #$id"
-            gh pr close "$id" \
-              --comment "This update was merged into PR #${BATCH_NUMBER}. Closing automatically." \
-              || echo "Could not close #$id (already closed?)"
+            echo "Reopening #$id"
+            gh pr comment "$id" --body "@dependabot reopen" \
+              || echo "Could not comment on #$id"
           done
 
       - name: Delete the batch branch
